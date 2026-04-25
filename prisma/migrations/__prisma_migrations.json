@@ -1,0 +1,22 @@
+[
+  {
+    "migrationName": "20260424000000_create_audio_table",
+    "steps": [
+      {
+        "isManual": false,
+        "internals": {
+          "OmegaQuery": "createTable"
+        },
+        "meta": {
+          "isInternal": false,
+          "tableName": "Audio"
+        },
+        "schema": "public",
+        "type": "createTable"
+      }
+    ],
+    "completed": "2026-04-24T00:00:00Z",
+    "markers": {},
+    "datasource": "db"
+  }
+]
