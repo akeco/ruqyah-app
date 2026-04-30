@@ -15,11 +15,10 @@ export async function GET() {
     });
 
     return NextResponse.json({ audios });
-  } catch (error) {
+  } catch (_error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const error = _error as any;
     console.error("Audio list error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

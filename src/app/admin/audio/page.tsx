@@ -3,37 +3,41 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import AudioPlayer from "@/components/admin/AudioPlayer";
 
 interface Audio {
   id: string;
-  title: string;
-  description: string | null;
+  titleEn: string;
+  titleBs: string;
+  descriptionEn: string | null;
+  descriptionBs: string | null;
   url: string;
   createdAt: string;
 }
 
 export default function AdminAudioPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [audios, setAudios] = useState<Audio[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [savingEditId, setSavingEditId] = useState<string | null>(null);
+  const [titleEn, setTitleEn] = useState("");
+  const [titleBs, setTitleBs] = useState("");
+  const [descriptionEn, setDescriptionEn] = useState("");
+  const [descriptionBs, setDescriptionBs] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [editTitleEn, setEditTitleEn] = useState("");
+  const [editTitleBs, setEditTitleBs] = useState("");
+  const [editDescriptionEn, setEditDescriptionEn] = useState("");
+  const [editDescriptionBs, setEditDescriptionBs] = useState("");
+  const [editFile, setEditFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    } else if (status === "authenticated") {
-      fetchAudios();
-    }
-  }, [status, router]);
-
-  const fetchAudios = async () => {
+  const fetchAudios = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/audios");
       if (res.ok) {
@@ -45,50 +49,74 @@ export default function AdminAudioPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleUpload = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSuccess(null);
-
-    if (!file) {
-      setError("Please select a file");
-      return;
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
     }
+  }, [status, router]);
 
-    setUploading(true);
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("title", title);
-    if (description) {
-      formData.append("description", description);
+  useEffect(() => {
+    if (status === "authenticated") {
+      const timer = window.setTimeout(() => {
+        void fetchAudios();
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
+  }, [status, fetchAudios]);
 
-    try {
-      const res = await fetch("/api/admin/audio/upload", {
-        method: "POST",
-        body: formData,
-      });
+  const handleUpload = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setError(null);
+      setSuccess(null);
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Upload failed");
+      if (!file) {
+        setError("Please select a file");
+        return;
       }
 
-      setSuccess("Audio uploaded successfully!");
-      setTitle("");
-      setDescription("");
-      setFile(null);
-      await fetchAudios();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
-    } finally {
-      setUploading(false);
-    }
-  }, [file, title, description, fetchAudios]);
+      setUploading(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("titleEn", titleEn);
+      formData.append("titleBs", titleBs);
+      if (descriptionEn) {
+        formData.append("descriptionEn", descriptionEn);
+      }
+      if (descriptionBs) {
+        formData.append("descriptionBs", descriptionBs);
+      }
+
+      try {
+        const res = await fetch("/api/admin/audio/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "Upload failed");
+        }
+
+        setSuccess("Audio uploaded successfully!");
+        setTitleEn("");
+        setTitleBs("");
+        setDescriptionEn("");
+        setDescriptionBs("");
+        setFile(null);
+        await fetchAudios();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Upload failed");
+      } finally {
+        setUploading(false);
+      }
+    },
+    [file, titleEn, titleBs, descriptionEn, descriptionBs, fetchAudios],
+  );
 
   const handleDelete = useCallback(async (id: string) => {
     if (!confirm("Are you sure you want to delete this audio?")) return;
@@ -112,6 +140,67 @@ export default function AdminAudioPage() {
     }
   }, []);
 
+  const startEdit = useCallback((audio: Audio) => {
+    setEditingId(audio.id);
+    setEditTitleEn(audio.titleEn);
+    setEditTitleBs(audio.titleBs);
+    setEditDescriptionEn(audio.descriptionEn || "");
+    setEditDescriptionBs(audio.descriptionBs || "");
+    setEditFile(null);
+    setError(null);
+    setSuccess(null);
+  }, []);
+
+  const cancelEdit = useCallback(() => {
+    setEditingId(null);
+    setSavingEditId(null);
+    setEditFile(null);
+  }, []);
+
+  const handleSaveEdit = useCallback(async () => {
+    if (!editingId) return;
+
+    setError(null);
+    setSuccess(null);
+    setSavingEditId(editingId);
+
+    try {
+      const formData = new FormData();
+      formData.append("titleEn", editTitleEn);
+      formData.append("titleBs", editTitleBs);
+      formData.append("descriptionEn", editDescriptionEn);
+      formData.append("descriptionBs", editDescriptionBs);
+      if (editFile) {
+        formData.append("file", editFile);
+      }
+
+      const res = await fetch(`/api/admin/audio/${editingId}`, {
+        method: "PATCH",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.details || data.error || "Update failed");
+      }
+
+      setAudios((prev) => prev.map((audio) => (audio.id === editingId ? data.audio : audio)));
+      setSuccess("Audio updated successfully.");
+      cancelEdit();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Update failed");
+    } finally {
+      setSavingEditId(null);
+    }
+  }, [
+    editingId,
+    editTitleEn,
+    editTitleBs,
+    editDescriptionEn,
+    editDescriptionBs,
+    editFile,
+    cancelEdit,
+  ]);
+
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -125,55 +214,75 @@ export default function AdminAudioPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold text-gray-900">Audio Management</h1>
-          <p className="text-sm text-gray-600">Upload and manage audio files</p>
-        </div>
-      </header>
-
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Upload Form */}
         <div className="mb-8 rounded-lg bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-lg font-medium text-gray-900">Upload New Audio</h2>
           <form onSubmit={handleUpload} className="space-y-4">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                Title *
-              </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                placeholder="Enter audio title"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  Title (English) *
+                </label>
+                <input
+                  type="text"
+                  value={titleEn}
+                  onChange={(e) => setTitleEn(e.target.value)}
+                  required
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  placeholder="English title"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  Title (Bosnian) *
+                </label>
+                <input
+                  type="text"
+                  value={titleBs}
+                  onChange={(e) => setTitleBs(e.target.value)}
+                  required
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  placeholder="Naslov na bosanskom"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  Description (English)
+                </label>
+                <textarea
+                  value={descriptionEn}
+                  onChange={(e) => setDescriptionEn(e.target.value)}
+                  rows={3}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  placeholder="English description (optional)"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  Description (Bosnian)
+                </label>
+                <textarea
+                  value={descriptionBs}
+                  onChange={(e) => setDescriptionBs(e.target.value)}
+                  rows={3}
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  placeholder="Opis na bosanskom (opcionalno)"
+                />
+              </div>
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                placeholder="Enter description (optional)"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                Audio File *
-              </label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Audio File *</label>
               <input
                 type="file"
                 accept="audio/*"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
                 required
-                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-indigo-600 file:hover:bg-indigo-100"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-indigo-600 file:hover:bg-indigo-100"
               />
               {file && (
                 <p className="mt-1 text-xs text-gray-500">
@@ -221,28 +330,115 @@ export default function AdminAudioPage() {
           ) : (
             <div className="divide-y divide-gray-200">
               {audios.map((audio) => (
-                <div key={audio.id} className="flex items-center justify-between px-6 py-4 hover:bg-gray-50">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-medium text-gray-900 truncate">{audio.title}</h3>
-                    {audio.description && (
-                      <p className="text-sm text-gray-500 truncate">{audio.description}</p>
+                <div
+                  key={audio.id}
+                  className="flex items-center justify-between px-6 py-4 hover:bg-gray-50"
+                >
+                  <div className="min-w-0 flex-1 mr-4">
+                    {editingId === audio.id ? (
+                      <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                        <input
+                          type="text"
+                          value={editTitleEn}
+                          onChange={(e) => setEditTitleEn(e.target.value)}
+                          placeholder="Title (English)"
+                          className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900"
+                        />
+                        <input
+                          type="text"
+                          value={editTitleBs}
+                          onChange={(e) => setEditTitleBs(e.target.value)}
+                          placeholder="Title (Bosnian)"
+                          className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900"
+                        />
+                        <textarea
+                          value={editDescriptionEn}
+                          onChange={(e) => setEditDescriptionEn(e.target.value)}
+                          placeholder="Description (English)"
+                          rows={2}
+                          className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900"
+                        />
+                        <textarea
+                          value={editDescriptionBs}
+                          onChange={(e) => setEditDescriptionBs(e.target.value)}
+                          placeholder="Description (Bosnian)"
+                          rows={2}
+                          className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900"
+                        />
+                        <div className="md:col-span-2">
+                          <input
+                            type="file"
+                            accept="audio/*"
+                            onChange={(e) => setEditFile(e.target.files?.[0] || null)}
+                            className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 file:mr-2 file:rounded-md file:border-0 file:bg-indigo-50 file:px-2 file:py-1 file:text-xs file:font-medium file:text-indigo-600"
+                          />
+                          {editFile && (
+                            <p className="mt-1 text-xs text-gray-500">New file: {editFile.name}</p>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center gap-3">
+                          <h4 className="text-sm font-medium text-gray-900 truncate">
+                            {audio.titleEn}
+                          </h4>
+                          <span className="text-xs text-gray-400">|</span>
+                          <h4 className="text-sm font-medium text-gray-900 truncate">
+                            {audio.titleBs}
+                          </h4>
+                        </div>
+                        {(audio.descriptionEn || audio.descriptionBs) && (
+                          <div className="mt-0.5">
+                            {audio.descriptionEn && (
+                              <p className="text-xs text-gray-500 truncate">
+                                {audio.descriptionEn}
+                              </p>
+                            )}
+                            {audio.descriptionBs && (
+                              <p className="text-xs text-gray-500 truncate">
+                                {audio.descriptionBs}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {new Date(audio.createdAt).toLocaleDateString()}
+                        </p>
+                      </>
                     )}
-                    <p className="text-xs text-gray-400 mt-1">
-                      {new Date(audio.createdAt).toLocaleDateString()}
-                    </p>
                   </div>
-                  <div className="ml-4 flex items-center gap-3 flex-shrink-0">
-                    <audio
-                      src={audio.url}
-                      controls
-                      className="h-8 w-auto max-w-[200px]"
-                    >
-                      Your browser does not support the audio element.
-                    </audio>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <AudioPlayer src={audio.url} />
+                    {editingId === audio.id ? (
+                      <>
+                        <button
+                          onClick={handleSaveEdit}
+                          disabled={savingEditId === audio.id}
+                          className="rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-50"
+                        >
+                          {savingEditId === audio.id ? "Saving..." : "Save"}
+                        </button>
+                        <button
+                          onClick={cancelEdit}
+                          disabled={savingEditId === audio.id}
+                          className="rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => startEdit(audio)}
+                        className="rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100"
+                      >
+                        Edit
+                      </button>
+                    )}
                     <button
                       onClick={() => handleDelete(audio.id)}
-                      disabled={deletingId === audio.id}
-                      className="rounded-md bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-100 disabled:opacity-50"
+                      disabled={deletingId === audio.id || savingEditId === audio.id}
+                      className="rounded-md bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-100 disabled:opacity-50"
                     >
                       {deletingId === audio.id ? "Deleting..." : "Delete"}
                     </button>

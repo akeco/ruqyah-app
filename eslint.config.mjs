@@ -12,5 +12,8 @@ export default tseslint.config(
     rules: {
       "@typescript-eslint/no-empty-object-type": "off",
     },
-  }
+  },
+  {
+    ignores: ["src/generated/prisma/**/*", ".next/**/*", "node_modules/**/*"],
+  },
 );
