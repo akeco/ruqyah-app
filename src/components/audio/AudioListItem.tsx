@@ -84,10 +84,10 @@ export function AudioListItem({
   // actually been played at least once. With 100+ items in the list, eagerly creating
   // a hidden YouTube player (or preloading every audio file) for every row at once
   // overwhelms the page and playback becomes unreliable for everything.
-  const [activated, setActivated] = useState(false);
-  useEffect(() => {
-    if (isPlaying) setActivated(true);
-  }, [isPlaying]);
+  const [activated, setActivated] = useState(isPlaying);
+  if (isPlaying && !activated) {
+    setActivated(true);
+  }
 
   // Native audio: play/pause follows isPlaying
   useEffect(() => {

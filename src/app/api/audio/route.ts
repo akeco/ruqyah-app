@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -7,7 +8,7 @@ export async function GET(request: Request) {
   const type = searchParams.get("type"); // "lecture" | "ruqya"
 
   try {
-    const where: any = {};
+    const where: Prisma.AudioWhereInput = {};
     if (type) {
       where.type = type;
     }
