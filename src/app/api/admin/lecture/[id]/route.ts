@@ -33,8 +33,16 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const formData = await request.formData();
     const titleEn = ((formData.get("titleEn") as string) || "").trim();
     const titleBs = ((formData.get("titleBs") as string) || "").trim();
-    const descriptionEn = ((formData.get("descriptionEn") as string) || "").trim();
-    const descriptionBs = ((formData.get("descriptionBs") as string) || "").trim();
+    const contentEn = ((formData.get("contentEn") as string) || "").trim();
+    const contentBs = ((formData.get("contentBs") as string) || "").trim();
+    const excerptEn = ((formData.get("excerptEn") as string) || "").trim();
+    const excerptBs = ((formData.get("excerptBs") as string) || "").trim();
+    const authorEn = ((formData.get("authorEn") as string) || "").trim();
+    const authorBs = ((formData.get("authorBs") as string) || "").trim();
+    const categoryEn = ((formData.get("categoryEn") as string) || "").trim();
+    const categoryBs = ((formData.get("categoryBs") as string) || "").trim();
+    const slug = ((formData.get("slug") as string) || "").trim();
+    const publishedAt = formData.get("publishedAt") as string;
     const imageFile = formData.get("image") as File | null;
 
     if (!titleEn || !titleBs) {
@@ -78,10 +86,18 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const updatedLecture = await prisma.lecture.update({
       where: { id },
       data: {
+        slug: slug || lecture.slug || `lecture-${Date.now()}`,
         titleEn,
         titleBs,
-        descriptionEn: descriptionEn || null,
-        descriptionBs: descriptionBs || null,
+        contentEn: contentEn || null,
+        contentBs: contentBs || null,
+        excerptEn: excerptEn || null,
+        excerptBs: excerptBs || null,
+        authorEn: authorEn || null,
+        authorBs: authorBs || null,
+        categoryEn: categoryEn || null,
+        categoryBs: categoryBs || null,
+        publishedAt: publishedAt ? new Date(publishedAt) : lecture.publishedAt,
         imageUrl,
       },
     });

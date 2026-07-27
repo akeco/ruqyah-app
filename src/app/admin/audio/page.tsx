@@ -11,13 +11,18 @@ interface Audio {
   titleBs: string;
   descriptionEn: string | null;
   descriptionBs: string | null;
-  url: string;
+  url: string | null;
+  youtubeUrl: string | null;
+  type: string | null;
   createdAt: string;
 }
+
+type AudioTab = "ruqya" | "lecture";
 
 export default function AdminAudioPage() {
   const { status } = useSession();
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<AudioTab>("ruqya");
   const [audios, setAudios] = useState<Audio[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -29,11 +34,13 @@ export default function AdminAudioPage() {
   const [descriptionEn, setDescriptionEn] = useState("");
   const [descriptionBs, setDescriptionBs] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [youtubeUrl, setYoutubeUrl] = useState("");
   const [editTitleEn, setEditTitleEn] = useState("");
   const [editTitleBs, setEditTitleBs] = useState("");
   const [editDescriptionEn, setEditDescriptionEn] = useState("");
   const [editDescriptionBs, setEditDescriptionBs] = useState("");
   const [editFile, setEditFile] = useState<File | null>(null);
+  const [editYoutubeUrl, setEditYoutubeUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -72,17 +79,23 @@ export default function AdminAudioPage() {
       setError(null);
       setSuccess(null);
 
-      if (!file) {
-        setError("Please select a file");
+      if (!file && !youtubeUrl.trim()) {
+        setError("Please select an audio file or provide a YouTube link");
         return;
       }
 
       setUploading(true);
 
       const formData = new FormData();
-      formData.append("file", file);
+      if (file) {
+        formData.append("file", file);
+      }
+      if (youtubeUrl.trim()) {
+        formData.append("youtubeUrl", youtubeUrl.trim());
+      }
       formData.append("titleEn", titleEn);
       formData.append("titleBs", titleBs);
+      formData.append("type", activeTab);
       if (descriptionEn) {
         formData.append("descriptionEn", descriptionEn);
       }
@@ -108,6 +121,7 @@ export default function AdminAudioPage() {
         setDescriptionEn("");
         setDescriptionBs("");
         setFile(null);
+        setYoutubeUrl("");
         await fetchAudios();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Upload failed");
@@ -115,7 +129,7 @@ export default function AdminAudioPage() {
         setUploading(false);
       }
     },
-    [file, titleEn, titleBs, descriptionEn, descriptionBs, fetchAudios],
+    [file, youtubeUrl, titleEn, titleBs, descriptionEn, descriptionBs, activeTab, fetchAudios],
   );
 
   const handleDelete = useCallback(async (id: string) => {
@@ -147,6 +161,7 @@ export default function AdminAudioPage() {
     setEditDescriptionEn(audio.descriptionEn || "");
     setEditDescriptionBs(audio.descriptionBs || "");
     setEditFile(null);
+    setEditYoutubeUrl(audio.youtubeUrl || "");
     setError(null);
     setSuccess(null);
   }, []);
@@ -155,6 +170,7 @@ export default function AdminAudioPage() {
     setEditingId(null);
     setSavingEditId(null);
     setEditFile(null);
+    setEditYoutubeUrl("");
   }, []);
 
   const handleSaveEdit = useCallback(async () => {
@@ -170,6 +186,7 @@ export default function AdminAudioPage() {
       formData.append("titleBs", editTitleBs);
       formData.append("descriptionEn", editDescriptionEn);
       formData.append("descriptionBs", editDescriptionBs);
+      formData.append("youtubeUrl", editYoutubeUrl);
       if (editFile) {
         formData.append("file", editFile);
       }
@@ -198,6 +215,7 @@ export default function AdminAudioPage() {
     editDescriptionEn,
     editDescriptionBs,
     editFile,
+    editYoutubeUrl,
     cancelEdit,
   ]);
 
@@ -212,12 +230,38 @@ export default function AdminAudioPage() {
     );
   }
 
+  const filteredAudios = audios.filter((audio) =>
+    activeTab === "lecture" ? audio.type === "lecture" : audio.type !== "lecture",
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Tabs */}
+        <div className="mb-6 flex gap-1 rounded-lg bg-gray-200 p-1 w-fit">
+          <button
+            onClick={() => setActiveTab("ruqya")}
+            className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+              activeTab === "ruqya" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
+            }`}
+          >
+            Ruqya Audio
+          </button>
+          <button
+            onClick={() => setActiveTab("lecture")}
+            className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+              activeTab === "lecture" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
+            }`}
+          >
+            Educational Lectures
+          </button>
+        </div>
+
         {/* Upload Form */}
         <div className="mb-8 rounded-lg bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-medium text-gray-900">Upload New Audio</h2>
+          <h2 className="mb-4 text-lg font-medium text-gray-900">
+            {activeTab === "lecture" ? "Upload New Lecture Audio" : "Upload New Ruqya Audio"}
+          </h2>
           <form onSubmit={handleUpload} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -276,12 +320,13 @@ export default function AdminAudioPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Audio File *</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Audio File {youtubeUrl.trim() ? "" : "*"}
+              </label>
               <input
                 type="file"
                 accept="audio/*"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
-                required
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-indigo-600 file:hover:bg-indigo-100"
               />
               {file && (
@@ -289,6 +334,24 @@ export default function AdminAudioPage() {
                   Selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
                 </p>
               )}
+            </div>
+
+            <div className="text-center text-xs text-gray-400">- or -</div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                YouTube Video Link {file ? "" : "*"}
+              </label>
+              <input
+                type="url"
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Provide either an audio file above or a YouTube link - only one is required.
+              </p>
             </div>
 
             <button
@@ -316,20 +379,24 @@ export default function AdminAudioPage() {
         {/* Audio List */}
         <div className="rounded-lg bg-white shadow-sm">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900">Audio Library</h2>
+            <h2 className="text-lg font-medium text-gray-900">
+              {activeTab === "lecture" ? "Lecture Library" : "Ruqya Audio Library"}
+            </h2>
           </div>
 
           {loading ? (
             <div className="flex justify-center py-8">
               <div className="inline-block h-6 w-6 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent align-[-0.125em]"></div>
             </div>
-          ) : audios.length === 0 ? (
+          ) : filteredAudios.length === 0 ? (
             <div className="py-12 text-center text-gray-500">
-              No audio files yet. Upload your first audio above.
+              {activeTab === "lecture"
+                ? "No lecture audio yet. Upload your first lecture above."
+                : "No ruqya audio yet. Upload your first audio above."}
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {audios.map((audio) => (
+              {filteredAudios.map((audio) => (
                 <div
                   key={audio.id}
                   className="flex items-center justify-between px-6 py-4 hover:bg-gray-50"
@@ -376,6 +443,15 @@ export default function AdminAudioPage() {
                             <p className="mt-1 text-xs text-gray-500">New file: {editFile.name}</p>
                           )}
                         </div>
+                        <div className="md:col-span-2">
+                          <input
+                            type="url"
+                            value={editYoutubeUrl}
+                            onChange={(e) => setEditYoutubeUrl(e.target.value)}
+                            placeholder="YouTube link (https://www.youtube.com/watch?v=...)"
+                            className="w-full rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900"
+                          />
+                        </div>
                       </div>
                     ) : (
                       <>
@@ -387,6 +463,11 @@ export default function AdminAudioPage() {
                           <h4 className="text-sm font-medium text-gray-900 truncate">
                             {audio.titleBs}
                           </h4>
+                          {audio.youtubeUrl && (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-red-50 px-1.5 py-0.5 text-xs font-medium text-red-600">
+                              YouTube
+                            </span>
+                          )}
                         </div>
                         {(audio.descriptionEn || audio.descriptionBs) && (
                           <div className="mt-0.5">
@@ -409,7 +490,18 @@ export default function AdminAudioPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <AudioPlayer src={audio.url} />
+                    {audio.url ? (
+                      <AudioPlayer src={audio.url} />
+                    ) : audio.youtubeUrl ? (
+                      <a
+                        href={audio.youtubeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-medium text-indigo-600 hover:text-indigo-700 underline"
+                      >
+                        Watch on YouTube
+                      </a>
+                    ) : null}
                     {editingId === audio.id ? (
                       <>
                         <button

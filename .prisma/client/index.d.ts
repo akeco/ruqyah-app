@@ -2054,8 +2054,18 @@ export namespace Prisma {
 
   export type AggregateAudio = {
     _count: AudioCountAggregateOutputType | null
+    _avg: AudioAvgAggregateOutputType | null
+    _sum: AudioSumAggregateOutputType | null
     _min: AudioMinAggregateOutputType | null
     _max: AudioMaxAggregateOutputType | null
+  }
+
+  export type AudioAvgAggregateOutputType = {
+    duration: number | null
+  }
+
+  export type AudioSumAggregateOutputType = {
+    duration: number | null
   }
 
   export type AudioMinAggregateOutputType = {
@@ -2064,7 +2074,11 @@ export namespace Prisma {
     titleBs: string | null
     descriptionEn: string | null
     descriptionBs: string | null
+    slug: string | null
+    type: string | null
+    duration: number | null
     url: string | null
+    youtubeUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2075,7 +2089,11 @@ export namespace Prisma {
     titleBs: string | null
     descriptionEn: string | null
     descriptionBs: string | null
+    slug: string | null
+    type: string | null
+    duration: number | null
     url: string | null
+    youtubeUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2086,12 +2104,24 @@ export namespace Prisma {
     titleBs: number
     descriptionEn: number
     descriptionBs: number
+    slug: number
+    type: number
+    duration: number
     url: number
+    youtubeUrl: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
+
+  export type AudioAvgAggregateInputType = {
+    duration?: true
+  }
+
+  export type AudioSumAggregateInputType = {
+    duration?: true
+  }
 
   export type AudioMinAggregateInputType = {
     id?: true
@@ -2099,7 +2129,11 @@ export namespace Prisma {
     titleBs?: true
     descriptionEn?: true
     descriptionBs?: true
+    slug?: true
+    type?: true
+    duration?: true
     url?: true
+    youtubeUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2110,7 +2144,11 @@ export namespace Prisma {
     titleBs?: true
     descriptionEn?: true
     descriptionBs?: true
+    slug?: true
+    type?: true
+    duration?: true
     url?: true
+    youtubeUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2121,7 +2159,11 @@ export namespace Prisma {
     titleBs?: true
     descriptionEn?: true
     descriptionBs?: true
+    slug?: true
+    type?: true
+    duration?: true
     url?: true
+    youtubeUrl?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2165,6 +2207,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: AudioAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AudioSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: AudioMinAggregateInputType
@@ -2195,6 +2249,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: AudioCountAggregateInputType | true
+    _avg?: AudioAvgAggregateInputType
+    _sum?: AudioSumAggregateInputType
     _min?: AudioMinAggregateInputType
     _max?: AudioMaxAggregateInputType
   }
@@ -2205,10 +2261,16 @@ export namespace Prisma {
     titleBs: string | null
     descriptionEn: string | null
     descriptionBs: string | null
-    url: string
+    slug: string | null
+    type: string | null
+    duration: number | null
+    url: string | null
+    youtubeUrl: string | null
     createdAt: Date
     updatedAt: Date
     _count: AudioCountAggregateOutputType | null
+    _avg: AudioAvgAggregateOutputType | null
+    _sum: AudioSumAggregateOutputType | null
     _min: AudioMinAggregateOutputType | null
     _max: AudioMaxAggregateOutputType | null
   }
@@ -2233,7 +2295,11 @@ export namespace Prisma {
     titleBs?: boolean
     descriptionEn?: boolean
     descriptionBs?: boolean
+    slug?: boolean
+    type?: boolean
+    duration?: boolean
     url?: boolean
+    youtubeUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["audio"]>
@@ -2244,7 +2310,11 @@ export namespace Prisma {
     titleBs?: boolean
     descriptionEn?: boolean
     descriptionBs?: boolean
+    slug?: boolean
+    type?: boolean
+    duration?: boolean
     url?: boolean
+    youtubeUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["audio"]>
@@ -2255,7 +2325,11 @@ export namespace Prisma {
     titleBs?: boolean
     descriptionEn?: boolean
     descriptionBs?: boolean
+    slug?: boolean
+    type?: boolean
+    duration?: boolean
     url?: boolean
+    youtubeUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["audio"]>
@@ -2266,12 +2340,16 @@ export namespace Prisma {
     titleBs?: boolean
     descriptionEn?: boolean
     descriptionBs?: boolean
+    slug?: boolean
+    type?: boolean
+    duration?: boolean
     url?: boolean
+    youtubeUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type AudioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "titleEn" | "titleBs" | "descriptionEn" | "descriptionBs" | "url" | "createdAt" | "updatedAt", ExtArgs["result"]["audio"]>
+  export type AudioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "titleEn" | "titleBs" | "descriptionEn" | "descriptionBs" | "slug" | "type" | "duration" | "url" | "youtubeUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["audio"]>
 
   export type $AudioPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Audio"
@@ -2282,7 +2360,11 @@ export namespace Prisma {
       titleBs: string | null
       descriptionEn: string | null
       descriptionBs: string | null
-      url: string
+      slug: string | null
+      type: string | null
+      duration: number | null
+      url: string | null
+      youtubeUrl: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["audio"]>
@@ -2713,7 +2795,11 @@ export namespace Prisma {
     readonly titleBs: FieldRef<"Audio", 'String'>
     readonly descriptionEn: FieldRef<"Audio", 'String'>
     readonly descriptionBs: FieldRef<"Audio", 'String'>
+    readonly slug: FieldRef<"Audio", 'String'>
+    readonly type: FieldRef<"Audio", 'String'>
+    readonly duration: FieldRef<"Audio", 'Int'>
     readonly url: FieldRef<"Audio", 'String'>
+    readonly youtubeUrl: FieldRef<"Audio", 'String'>
     readonly createdAt: FieldRef<"Audio", 'DateTime'>
     readonly updatedAt: FieldRef<"Audio", 'DateTime'>
   }
@@ -3099,10 +3185,18 @@ export namespace Prisma {
 
   export type LectureMinAggregateOutputType = {
     id: string | null
+    slug: string | null
     titleEn: string | null
     titleBs: string | null
-    descriptionEn: string | null
-    descriptionBs: string | null
+    contentEn: string | null
+    contentBs: string | null
+    excerptEn: string | null
+    excerptBs: string | null
+    authorEn: string | null
+    authorBs: string | null
+    categoryEn: string | null
+    categoryBs: string | null
+    publishedAt: Date | null
     imageUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -3110,10 +3204,18 @@ export namespace Prisma {
 
   export type LectureMaxAggregateOutputType = {
     id: string | null
+    slug: string | null
     titleEn: string | null
     titleBs: string | null
-    descriptionEn: string | null
-    descriptionBs: string | null
+    contentEn: string | null
+    contentBs: string | null
+    excerptEn: string | null
+    excerptBs: string | null
+    authorEn: string | null
+    authorBs: string | null
+    categoryEn: string | null
+    categoryBs: string | null
+    publishedAt: Date | null
     imageUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -3121,10 +3223,18 @@ export namespace Prisma {
 
   export type LectureCountAggregateOutputType = {
     id: number
+    slug: number
     titleEn: number
     titleBs: number
-    descriptionEn: number
-    descriptionBs: number
+    contentEn: number
+    contentBs: number
+    excerptEn: number
+    excerptBs: number
+    authorEn: number
+    authorBs: number
+    categoryEn: number
+    categoryBs: number
+    publishedAt: number
     imageUrl: number
     createdAt: number
     updatedAt: number
@@ -3134,10 +3244,18 @@ export namespace Prisma {
 
   export type LectureMinAggregateInputType = {
     id?: true
+    slug?: true
     titleEn?: true
     titleBs?: true
-    descriptionEn?: true
-    descriptionBs?: true
+    contentEn?: true
+    contentBs?: true
+    excerptEn?: true
+    excerptBs?: true
+    authorEn?: true
+    authorBs?: true
+    categoryEn?: true
+    categoryBs?: true
+    publishedAt?: true
     imageUrl?: true
     createdAt?: true
     updatedAt?: true
@@ -3145,10 +3263,18 @@ export namespace Prisma {
 
   export type LectureMaxAggregateInputType = {
     id?: true
+    slug?: true
     titleEn?: true
     titleBs?: true
-    descriptionEn?: true
-    descriptionBs?: true
+    contentEn?: true
+    contentBs?: true
+    excerptEn?: true
+    excerptBs?: true
+    authorEn?: true
+    authorBs?: true
+    categoryEn?: true
+    categoryBs?: true
+    publishedAt?: true
     imageUrl?: true
     createdAt?: true
     updatedAt?: true
@@ -3156,10 +3282,18 @@ export namespace Prisma {
 
   export type LectureCountAggregateInputType = {
     id?: true
+    slug?: true
     titleEn?: true
     titleBs?: true
-    descriptionEn?: true
-    descriptionBs?: true
+    contentEn?: true
+    contentBs?: true
+    excerptEn?: true
+    excerptBs?: true
+    authorEn?: true
+    authorBs?: true
+    categoryEn?: true
+    categoryBs?: true
+    publishedAt?: true
     imageUrl?: true
     createdAt?: true
     updatedAt?: true
@@ -3240,10 +3374,18 @@ export namespace Prisma {
 
   export type LectureGroupByOutputType = {
     id: string
+    slug: string | null
     titleEn: string
     titleBs: string
-    descriptionEn: string | null
-    descriptionBs: string | null
+    contentEn: string | null
+    contentBs: string | null
+    excerptEn: string | null
+    excerptBs: string | null
+    authorEn: string | null
+    authorBs: string | null
+    categoryEn: string | null
+    categoryBs: string | null
+    publishedAt: Date | null
     imageUrl: string
     createdAt: Date
     updatedAt: Date
@@ -3268,10 +3410,18 @@ export namespace Prisma {
 
   export type LectureSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    slug?: boolean
     titleEn?: boolean
     titleBs?: boolean
-    descriptionEn?: boolean
-    descriptionBs?: boolean
+    contentEn?: boolean
+    contentBs?: boolean
+    excerptEn?: boolean
+    excerptBs?: boolean
+    authorEn?: boolean
+    authorBs?: boolean
+    categoryEn?: boolean
+    categoryBs?: boolean
+    publishedAt?: boolean
     imageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3279,10 +3429,18 @@ export namespace Prisma {
 
   export type LectureSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    slug?: boolean
     titleEn?: boolean
     titleBs?: boolean
-    descriptionEn?: boolean
-    descriptionBs?: boolean
+    contentEn?: boolean
+    contentBs?: boolean
+    excerptEn?: boolean
+    excerptBs?: boolean
+    authorEn?: boolean
+    authorBs?: boolean
+    categoryEn?: boolean
+    categoryBs?: boolean
+    publishedAt?: boolean
     imageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3290,10 +3448,18 @@ export namespace Prisma {
 
   export type LectureSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    slug?: boolean
     titleEn?: boolean
     titleBs?: boolean
-    descriptionEn?: boolean
-    descriptionBs?: boolean
+    contentEn?: boolean
+    contentBs?: boolean
+    excerptEn?: boolean
+    excerptBs?: boolean
+    authorEn?: boolean
+    authorBs?: boolean
+    categoryEn?: boolean
+    categoryBs?: boolean
+    publishedAt?: boolean
     imageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3301,26 +3467,42 @@ export namespace Prisma {
 
   export type LectureSelectScalar = {
     id?: boolean
+    slug?: boolean
     titleEn?: boolean
     titleBs?: boolean
-    descriptionEn?: boolean
-    descriptionBs?: boolean
+    contentEn?: boolean
+    contentBs?: boolean
+    excerptEn?: boolean
+    excerptBs?: boolean
+    authorEn?: boolean
+    authorBs?: boolean
+    categoryEn?: boolean
+    categoryBs?: boolean
+    publishedAt?: boolean
     imageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type LectureOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "titleEn" | "titleBs" | "descriptionEn" | "descriptionBs" | "imageUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["lecture"]>
+  export type LectureOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slug" | "titleEn" | "titleBs" | "contentEn" | "contentBs" | "excerptEn" | "excerptBs" | "authorEn" | "authorBs" | "categoryEn" | "categoryBs" | "publishedAt" | "imageUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["lecture"]>
 
   export type $LecturePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Lecture"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      slug: string | null
       titleEn: string
       titleBs: string
-      descriptionEn: string | null
-      descriptionBs: string | null
+      contentEn: string | null
+      contentBs: string | null
+      excerptEn: string | null
+      excerptBs: string | null
+      authorEn: string | null
+      authorBs: string | null
+      categoryEn: string | null
+      categoryBs: string | null
+      publishedAt: Date | null
       imageUrl: string
       createdAt: Date
       updatedAt: Date
@@ -3748,10 +3930,18 @@ export namespace Prisma {
    */
   interface LectureFieldRefs {
     readonly id: FieldRef<"Lecture", 'String'>
+    readonly slug: FieldRef<"Lecture", 'String'>
     readonly titleEn: FieldRef<"Lecture", 'String'>
     readonly titleBs: FieldRef<"Lecture", 'String'>
-    readonly descriptionEn: FieldRef<"Lecture", 'String'>
-    readonly descriptionBs: FieldRef<"Lecture", 'String'>
+    readonly contentEn: FieldRef<"Lecture", 'String'>
+    readonly contentBs: FieldRef<"Lecture", 'String'>
+    readonly excerptEn: FieldRef<"Lecture", 'String'>
+    readonly excerptBs: FieldRef<"Lecture", 'String'>
+    readonly authorEn: FieldRef<"Lecture", 'String'>
+    readonly authorBs: FieldRef<"Lecture", 'String'>
+    readonly categoryEn: FieldRef<"Lecture", 'String'>
+    readonly categoryBs: FieldRef<"Lecture", 'String'>
+    readonly publishedAt: FieldRef<"Lecture", 'DateTime'>
     readonly imageUrl: FieldRef<"Lecture", 'String'>
     readonly createdAt: FieldRef<"Lecture", 'DateTime'>
     readonly updatedAt: FieldRef<"Lecture", 'DateTime'>
@@ -4157,7 +4347,11 @@ export namespace Prisma {
     titleBs: 'titleBs',
     descriptionEn: 'descriptionEn',
     descriptionBs: 'descriptionBs',
+    slug: 'slug',
+    type: 'type',
+    duration: 'duration',
     url: 'url',
+    youtubeUrl: 'youtubeUrl',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -4167,10 +4361,18 @@ export namespace Prisma {
 
   export const LectureScalarFieldEnum: {
     id: 'id',
+    slug: 'slug',
     titleEn: 'titleEn',
     titleBs: 'titleBs',
-    descriptionEn: 'descriptionEn',
-    descriptionBs: 'descriptionBs',
+    contentEn: 'contentEn',
+    contentBs: 'contentBs',
+    excerptEn: 'excerptEn',
+    excerptBs: 'excerptBs',
+    authorEn: 'authorEn',
+    authorBs: 'authorBs',
+    categoryEn: 'categoryEn',
+    categoryBs: 'categoryBs',
+    publishedAt: 'publishedAt',
     imageUrl: 'imageUrl',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -4248,6 +4450,20 @@ export namespace Prisma {
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
   /**
    * Deep Input Types
    */
@@ -4314,7 +4530,11 @@ export namespace Prisma {
     titleBs?: StringNullableFilter<"Audio"> | string | null
     descriptionEn?: StringNullableFilter<"Audio"> | string | null
     descriptionBs?: StringNullableFilter<"Audio"> | string | null
-    url?: StringFilter<"Audio"> | string
+    slug?: StringNullableFilter<"Audio"> | string | null
+    type?: StringNullableFilter<"Audio"> | string | null
+    duration?: IntNullableFilter<"Audio"> | number | null
+    url?: StringNullableFilter<"Audio"> | string | null
+    youtubeUrl?: StringNullableFilter<"Audio"> | string | null
     createdAt?: DateTimeFilter<"Audio"> | Date | string
     updatedAt?: DateTimeFilter<"Audio"> | Date | string
   }
@@ -4325,13 +4545,18 @@ export namespace Prisma {
     titleBs?: SortOrderInput | SortOrder
     descriptionEn?: SortOrderInput | SortOrder
     descriptionBs?: SortOrderInput | SortOrder
-    url?: SortOrder
+    slug?: SortOrderInput | SortOrder
+    type?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
+    url?: SortOrderInput | SortOrder
+    youtubeUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type AudioWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    slug?: string
     AND?: AudioWhereInput | AudioWhereInput[]
     OR?: AudioWhereInput[]
     NOT?: AudioWhereInput | AudioWhereInput[]
@@ -4339,10 +4564,13 @@ export namespace Prisma {
     titleBs?: StringNullableFilter<"Audio"> | string | null
     descriptionEn?: StringNullableFilter<"Audio"> | string | null
     descriptionBs?: StringNullableFilter<"Audio"> | string | null
-    url?: StringFilter<"Audio"> | string
+    type?: StringNullableFilter<"Audio"> | string | null
+    duration?: IntNullableFilter<"Audio"> | number | null
+    url?: StringNullableFilter<"Audio"> | string | null
+    youtubeUrl?: StringNullableFilter<"Audio"> | string | null
     createdAt?: DateTimeFilter<"Audio"> | Date | string
     updatedAt?: DateTimeFilter<"Audio"> | Date | string
-  }, "id">
+  }, "id" | "slug">
 
   export type AudioOrderByWithAggregationInput = {
     id?: SortOrder
@@ -4350,12 +4578,18 @@ export namespace Prisma {
     titleBs?: SortOrderInput | SortOrder
     descriptionEn?: SortOrderInput | SortOrder
     descriptionBs?: SortOrderInput | SortOrder
-    url?: SortOrder
+    slug?: SortOrderInput | SortOrder
+    type?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
+    url?: SortOrderInput | SortOrder
+    youtubeUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: AudioCountOrderByAggregateInput
+    _avg?: AudioAvgOrderByAggregateInput
     _max?: AudioMaxOrderByAggregateInput
     _min?: AudioMinOrderByAggregateInput
+    _sum?: AudioSumOrderByAggregateInput
   }
 
   export type AudioScalarWhereWithAggregatesInput = {
@@ -4367,7 +4601,11 @@ export namespace Prisma {
     titleBs?: StringNullableWithAggregatesFilter<"Audio"> | string | null
     descriptionEn?: StringNullableWithAggregatesFilter<"Audio"> | string | null
     descriptionBs?: StringNullableWithAggregatesFilter<"Audio"> | string | null
-    url?: StringWithAggregatesFilter<"Audio"> | string
+    slug?: StringNullableWithAggregatesFilter<"Audio"> | string | null
+    type?: StringNullableWithAggregatesFilter<"Audio"> | string | null
+    duration?: IntNullableWithAggregatesFilter<"Audio"> | number | null
+    url?: StringNullableWithAggregatesFilter<"Audio"> | string | null
+    youtubeUrl?: StringNullableWithAggregatesFilter<"Audio"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Audio"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Audio"> | Date | string
   }
@@ -4377,10 +4615,18 @@ export namespace Prisma {
     OR?: LectureWhereInput[]
     NOT?: LectureWhereInput | LectureWhereInput[]
     id?: StringFilter<"Lecture"> | string
+    slug?: StringNullableFilter<"Lecture"> | string | null
     titleEn?: StringFilter<"Lecture"> | string
     titleBs?: StringFilter<"Lecture"> | string
-    descriptionEn?: StringNullableFilter<"Lecture"> | string | null
-    descriptionBs?: StringNullableFilter<"Lecture"> | string | null
+    contentEn?: StringNullableFilter<"Lecture"> | string | null
+    contentBs?: StringNullableFilter<"Lecture"> | string | null
+    excerptEn?: StringNullableFilter<"Lecture"> | string | null
+    excerptBs?: StringNullableFilter<"Lecture"> | string | null
+    authorEn?: StringNullableFilter<"Lecture"> | string | null
+    authorBs?: StringNullableFilter<"Lecture"> | string | null
+    categoryEn?: StringNullableFilter<"Lecture"> | string | null
+    categoryBs?: StringNullableFilter<"Lecture"> | string | null
+    publishedAt?: DateTimeNullableFilter<"Lecture"> | Date | string | null
     imageUrl?: StringFilter<"Lecture"> | string
     createdAt?: DateTimeFilter<"Lecture"> | Date | string
     updatedAt?: DateTimeFilter<"Lecture"> | Date | string
@@ -4388,10 +4634,18 @@ export namespace Prisma {
 
   export type LectureOrderByWithRelationInput = {
     id?: SortOrder
+    slug?: SortOrderInput | SortOrder
     titleEn?: SortOrder
     titleBs?: SortOrder
-    descriptionEn?: SortOrderInput | SortOrder
-    descriptionBs?: SortOrderInput | SortOrder
+    contentEn?: SortOrderInput | SortOrder
+    contentBs?: SortOrderInput | SortOrder
+    excerptEn?: SortOrderInput | SortOrder
+    excerptBs?: SortOrderInput | SortOrder
+    authorEn?: SortOrderInput | SortOrder
+    authorBs?: SortOrderInput | SortOrder
+    categoryEn?: SortOrderInput | SortOrder
+    categoryBs?: SortOrderInput | SortOrder
+    publishedAt?: SortOrderInput | SortOrder
     imageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -4399,24 +4653,40 @@ export namespace Prisma {
 
   export type LectureWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    slug?: string
     AND?: LectureWhereInput | LectureWhereInput[]
     OR?: LectureWhereInput[]
     NOT?: LectureWhereInput | LectureWhereInput[]
     titleEn?: StringFilter<"Lecture"> | string
     titleBs?: StringFilter<"Lecture"> | string
-    descriptionEn?: StringNullableFilter<"Lecture"> | string | null
-    descriptionBs?: StringNullableFilter<"Lecture"> | string | null
+    contentEn?: StringNullableFilter<"Lecture"> | string | null
+    contentBs?: StringNullableFilter<"Lecture"> | string | null
+    excerptEn?: StringNullableFilter<"Lecture"> | string | null
+    excerptBs?: StringNullableFilter<"Lecture"> | string | null
+    authorEn?: StringNullableFilter<"Lecture"> | string | null
+    authorBs?: StringNullableFilter<"Lecture"> | string | null
+    categoryEn?: StringNullableFilter<"Lecture"> | string | null
+    categoryBs?: StringNullableFilter<"Lecture"> | string | null
+    publishedAt?: DateTimeNullableFilter<"Lecture"> | Date | string | null
     imageUrl?: StringFilter<"Lecture"> | string
     createdAt?: DateTimeFilter<"Lecture"> | Date | string
     updatedAt?: DateTimeFilter<"Lecture"> | Date | string
-  }, "id">
+  }, "id" | "slug">
 
   export type LectureOrderByWithAggregationInput = {
     id?: SortOrder
+    slug?: SortOrderInput | SortOrder
     titleEn?: SortOrder
     titleBs?: SortOrder
-    descriptionEn?: SortOrderInput | SortOrder
-    descriptionBs?: SortOrderInput | SortOrder
+    contentEn?: SortOrderInput | SortOrder
+    contentBs?: SortOrderInput | SortOrder
+    excerptEn?: SortOrderInput | SortOrder
+    excerptBs?: SortOrderInput | SortOrder
+    authorEn?: SortOrderInput | SortOrder
+    authorBs?: SortOrderInput | SortOrder
+    categoryEn?: SortOrderInput | SortOrder
+    categoryBs?: SortOrderInput | SortOrder
+    publishedAt?: SortOrderInput | SortOrder
     imageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -4430,10 +4700,18 @@ export namespace Prisma {
     OR?: LectureScalarWhereWithAggregatesInput[]
     NOT?: LectureScalarWhereWithAggregatesInput | LectureScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Lecture"> | string
+    slug?: StringNullableWithAggregatesFilter<"Lecture"> | string | null
     titleEn?: StringWithAggregatesFilter<"Lecture"> | string
     titleBs?: StringWithAggregatesFilter<"Lecture"> | string
-    descriptionEn?: StringNullableWithAggregatesFilter<"Lecture"> | string | null
-    descriptionBs?: StringNullableWithAggregatesFilter<"Lecture"> | string | null
+    contentEn?: StringNullableWithAggregatesFilter<"Lecture"> | string | null
+    contentBs?: StringNullableWithAggregatesFilter<"Lecture"> | string | null
+    excerptEn?: StringNullableWithAggregatesFilter<"Lecture"> | string | null
+    excerptBs?: StringNullableWithAggregatesFilter<"Lecture"> | string | null
+    authorEn?: StringNullableWithAggregatesFilter<"Lecture"> | string | null
+    authorBs?: StringNullableWithAggregatesFilter<"Lecture"> | string | null
+    categoryEn?: StringNullableWithAggregatesFilter<"Lecture"> | string | null
+    categoryBs?: StringNullableWithAggregatesFilter<"Lecture"> | string | null
+    publishedAt?: DateTimeNullableWithAggregatesFilter<"Lecture"> | Date | string | null
     imageUrl?: StringWithAggregatesFilter<"Lecture"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Lecture"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Lecture"> | Date | string
@@ -4501,7 +4779,11 @@ export namespace Prisma {
     titleBs?: string | null
     descriptionEn?: string | null
     descriptionBs?: string | null
-    url: string
+    slug?: string | null
+    type?: string | null
+    duration?: number | null
+    url?: string | null
+    youtubeUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -4512,7 +4794,11 @@ export namespace Prisma {
     titleBs?: string | null
     descriptionEn?: string | null
     descriptionBs?: string | null
-    url: string
+    slug?: string | null
+    type?: string | null
+    duration?: number | null
+    url?: string | null
+    youtubeUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -4523,7 +4809,11 @@ export namespace Prisma {
     titleBs?: NullableStringFieldUpdateOperationsInput | string | null
     descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     descriptionBs?: NullableStringFieldUpdateOperationsInput | string | null
-    url?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4534,7 +4824,11 @@ export namespace Prisma {
     titleBs?: NullableStringFieldUpdateOperationsInput | string | null
     descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     descriptionBs?: NullableStringFieldUpdateOperationsInput | string | null
-    url?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4545,7 +4839,11 @@ export namespace Prisma {
     titleBs?: string | null
     descriptionEn?: string | null
     descriptionBs?: string | null
-    url: string
+    slug?: string | null
+    type?: string | null
+    duration?: number | null
+    url?: string | null
+    youtubeUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -4556,7 +4854,11 @@ export namespace Prisma {
     titleBs?: NullableStringFieldUpdateOperationsInput | string | null
     descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     descriptionBs?: NullableStringFieldUpdateOperationsInput | string | null
-    url?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4567,17 +4869,29 @@ export namespace Prisma {
     titleBs?: NullableStringFieldUpdateOperationsInput | string | null
     descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
     descriptionBs?: NullableStringFieldUpdateOperationsInput | string | null
-    url?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableIntFieldUpdateOperationsInput | number | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    youtubeUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type LectureCreateInput = {
     id?: string
+    slug?: string | null
     titleEn: string
     titleBs: string
-    descriptionEn?: string | null
-    descriptionBs?: string | null
+    contentEn?: string | null
+    contentBs?: string | null
+    excerptEn?: string | null
+    excerptBs?: string | null
+    authorEn?: string | null
+    authorBs?: string | null
+    categoryEn?: string | null
+    categoryBs?: string | null
+    publishedAt?: Date | string | null
     imageUrl: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -4585,10 +4899,18 @@ export namespace Prisma {
 
   export type LectureUncheckedCreateInput = {
     id?: string
+    slug?: string | null
     titleEn: string
     titleBs: string
-    descriptionEn?: string | null
-    descriptionBs?: string | null
+    contentEn?: string | null
+    contentBs?: string | null
+    excerptEn?: string | null
+    excerptBs?: string | null
+    authorEn?: string | null
+    authorBs?: string | null
+    categoryEn?: string | null
+    categoryBs?: string | null
+    publishedAt?: Date | string | null
     imageUrl: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -4596,10 +4918,18 @@ export namespace Prisma {
 
   export type LectureUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
     titleEn?: StringFieldUpdateOperationsInput | string
     titleBs?: StringFieldUpdateOperationsInput | string
-    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionBs?: NullableStringFieldUpdateOperationsInput | string | null
+    contentEn?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBs?: NullableStringFieldUpdateOperationsInput | string | null
+    excerptEn?: NullableStringFieldUpdateOperationsInput | string | null
+    excerptBs?: NullableStringFieldUpdateOperationsInput | string | null
+    authorEn?: NullableStringFieldUpdateOperationsInput | string | null
+    authorBs?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryEn?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryBs?: NullableStringFieldUpdateOperationsInput | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4607,10 +4937,18 @@ export namespace Prisma {
 
   export type LectureUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
     titleEn?: StringFieldUpdateOperationsInput | string
     titleBs?: StringFieldUpdateOperationsInput | string
-    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionBs?: NullableStringFieldUpdateOperationsInput | string | null
+    contentEn?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBs?: NullableStringFieldUpdateOperationsInput | string | null
+    excerptEn?: NullableStringFieldUpdateOperationsInput | string | null
+    excerptBs?: NullableStringFieldUpdateOperationsInput | string | null
+    authorEn?: NullableStringFieldUpdateOperationsInput | string | null
+    authorBs?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryEn?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryBs?: NullableStringFieldUpdateOperationsInput | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4618,10 +4956,18 @@ export namespace Prisma {
 
   export type LectureCreateManyInput = {
     id?: string
+    slug?: string | null
     titleEn: string
     titleBs: string
-    descriptionEn?: string | null
-    descriptionBs?: string | null
+    contentEn?: string | null
+    contentBs?: string | null
+    excerptEn?: string | null
+    excerptBs?: string | null
+    authorEn?: string | null
+    authorBs?: string | null
+    categoryEn?: string | null
+    categoryBs?: string | null
+    publishedAt?: Date | string | null
     imageUrl: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -4629,10 +4975,18 @@ export namespace Prisma {
 
   export type LectureUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
     titleEn?: StringFieldUpdateOperationsInput | string
     titleBs?: StringFieldUpdateOperationsInput | string
-    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionBs?: NullableStringFieldUpdateOperationsInput | string | null
+    contentEn?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBs?: NullableStringFieldUpdateOperationsInput | string | null
+    excerptEn?: NullableStringFieldUpdateOperationsInput | string | null
+    excerptBs?: NullableStringFieldUpdateOperationsInput | string | null
+    authorEn?: NullableStringFieldUpdateOperationsInput | string | null
+    authorBs?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryEn?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryBs?: NullableStringFieldUpdateOperationsInput | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4640,10 +4994,18 @@ export namespace Prisma {
 
   export type LectureUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
     titleEn?: StringFieldUpdateOperationsInput | string
     titleBs?: StringFieldUpdateOperationsInput | string
-    descriptionEn?: NullableStringFieldUpdateOperationsInput | string | null
-    descriptionBs?: NullableStringFieldUpdateOperationsInput | string | null
+    contentEn?: NullableStringFieldUpdateOperationsInput | string | null
+    contentBs?: NullableStringFieldUpdateOperationsInput | string | null
+    excerptEn?: NullableStringFieldUpdateOperationsInput | string | null
+    excerptBs?: NullableStringFieldUpdateOperationsInput | string | null
+    authorEn?: NullableStringFieldUpdateOperationsInput | string | null
+    authorBs?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryEn?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryBs?: NullableStringFieldUpdateOperationsInput | string | null
+    publishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -4769,15 +5131,34 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type AudioCountOrderByAggregateInput = {
     id?: SortOrder
     titleEn?: SortOrder
     titleBs?: SortOrder
     descriptionEn?: SortOrder
     descriptionBs?: SortOrder
+    slug?: SortOrder
+    type?: SortOrder
+    duration?: SortOrder
     url?: SortOrder
+    youtubeUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type AudioAvgOrderByAggregateInput = {
+    duration?: SortOrder
   }
 
   export type AudioMaxOrderByAggregateInput = {
@@ -4786,7 +5167,11 @@ export namespace Prisma {
     titleBs?: SortOrder
     descriptionEn?: SortOrder
     descriptionBs?: SortOrder
+    slug?: SortOrder
+    type?: SortOrder
+    duration?: SortOrder
     url?: SortOrder
+    youtubeUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -4797,17 +5182,60 @@ export namespace Prisma {
     titleBs?: SortOrder
     descriptionEn?: SortOrder
     descriptionBs?: SortOrder
+    slug?: SortOrder
+    type?: SortOrder
+    duration?: SortOrder
     url?: SortOrder
+    youtubeUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
+  export type AudioSumOrderByAggregateInput = {
+    duration?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type LectureCountOrderByAggregateInput = {
     id?: SortOrder
+    slug?: SortOrder
     titleEn?: SortOrder
     titleBs?: SortOrder
-    descriptionEn?: SortOrder
-    descriptionBs?: SortOrder
+    contentEn?: SortOrder
+    contentBs?: SortOrder
+    excerptEn?: SortOrder
+    excerptBs?: SortOrder
+    authorEn?: SortOrder
+    authorBs?: SortOrder
+    categoryEn?: SortOrder
+    categoryBs?: SortOrder
+    publishedAt?: SortOrder
     imageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -4815,10 +5243,18 @@ export namespace Prisma {
 
   export type LectureMaxOrderByAggregateInput = {
     id?: SortOrder
+    slug?: SortOrder
     titleEn?: SortOrder
     titleBs?: SortOrder
-    descriptionEn?: SortOrder
-    descriptionBs?: SortOrder
+    contentEn?: SortOrder
+    contentBs?: SortOrder
+    excerptEn?: SortOrder
+    excerptBs?: SortOrder
+    authorEn?: SortOrder
+    authorBs?: SortOrder
+    categoryEn?: SortOrder
+    categoryBs?: SortOrder
+    publishedAt?: SortOrder
     imageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -4826,13 +5262,35 @@ export namespace Prisma {
 
   export type LectureMinOrderByAggregateInput = {
     id?: SortOrder
+    slug?: SortOrder
     titleEn?: SortOrder
     titleBs?: SortOrder
-    descriptionEn?: SortOrder
-    descriptionBs?: SortOrder
+    contentEn?: SortOrder
+    contentBs?: SortOrder
+    excerptEn?: SortOrder
+    excerptBs?: SortOrder
+    authorEn?: SortOrder
+    authorBs?: SortOrder
+    categoryEn?: SortOrder
+    categoryBs?: SortOrder
+    publishedAt?: SortOrder
     imageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -4845,6 +5303,18 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -4954,6 +5424,58 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
 

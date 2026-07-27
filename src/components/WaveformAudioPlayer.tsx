@@ -19,6 +19,18 @@ export default function WaveformAudioPlayer({ src }: WaveformAudioPlayerProps) {
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioBufferRef = useRef<AudioBuffer | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const sourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const animFrameRef = useRef<number | null>(null);
+
+  // Refs to track actual playback position — always in sync, never stale
+  const currentTimeRef = useRef(0);
+  const startTimeRef = useRef(0);
+  const startCurrentTimeRef = useRef(0);
+
+  // Keep currentTimeRef in sync with state
+  useEffect(() => {
+    currentTimeRef.current = currentTime;
+  }, [currentTime]);
 
   const computeWaveform = useCallback(async (audioSrc: string) => {
     setIsLoading(true);
@@ -66,12 +78,40 @@ export default function WaveformAudioPlayer({ src }: WaveformAudioPlayerProps) {
     }
   }, []);
 
-  // Fetch waveform on mount — setState in effect is intentional for data fetching
+  // Fetch waveform on mount
   /* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
   useEffect(() => {
     computeWaveform(src);
   }, [computeWaveform]);
   /* eslint-enable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
+
+  // Cleanup: stop source and free audio context when src changes or unmount
+  useEffect(() => {
+    return () => {
+      if (sourceRef.current) {
+        try {
+          sourceRef.current.stop();
+        } catch {
+          // silent
+        }
+        sourceRef.current.disconnect();
+        sourceRef.current = null;
+      }
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+        animFrameRef.current = null;
+      }
+      if (audioContextRef.current?.state !== "closed") {
+        audioContextRef.current?.close();
+      }
+      audioBufferRef.current = null;
+      setIsPlaying(false);
+      setCurrentTime(0);
+      currentTimeRef.current = 0;
+      startTimeRef.current = 0;
+      startCurrentTimeRef.current = 0;
+    };
+  }, [src]);
 
   // Redraw when progress changes
   useEffect(() => {
@@ -93,7 +133,6 @@ export default function WaveformAudioPlayer({ src }: WaveformAudioPlayerProps) {
     const barWidth = width / waveform.length;
     const gap = 1.5;
 
-    // Draw waveform
     for (let i = 0; i < waveform.length; i++) {
       const x = i * barWidth;
       const barHeight = waveform[i] * height;
@@ -113,25 +152,73 @@ export default function WaveformAudioPlayer({ src }: WaveformAudioPlayerProps) {
     }
   }, [waveform, currentTime, duration]);
 
+  const stopSource = useCallback(() => {
+    if (sourceRef.current) {
+      try {
+        sourceRef.current.stop();
+      } catch {
+        // silent
+      }
+      sourceRef.current.disconnect();
+      sourceRef.current = null;
+    }
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
+    }
+  }, []);
+
   const togglePlayPause = useCallback(async () => {
     if (!audioBufferRef.current) return;
+
+    if (isPlaying) {
+      // Pause: save current time from ref (never stale), stop source
+      stopSource();
+      setIsPlaying(false);
+      return;
+    }
 
     if (audioContextRef.current?.state === "suspended") {
       await audioContextRef.current.resume();
     }
 
+    // Use ref for startCurrentTime — guaranteed up-to-date
+    const startCurrentTime = currentTimeRef.current;
     const source = audioContextRef.current!.createBufferSource();
     source.buffer = audioBufferRef.current;
     source.connect(audioContextRef.current!.destination);
-    source.start(0, currentTime);
+    source.start(0, startCurrentTime);
+    sourceRef.current = source;
+
+    // Store context time for elapsed calculation
+    startTimeRef.current = audioContextRef.current!.currentTime;
+    startCurrentTimeRef.current = startCurrentTime;
 
     source.onended = () => {
       setIsPlaying(false);
       setCurrentTime(0);
+      currentTimeRef.current = 0;
+      sourceRef.current = null;
     };
 
+    const updateProgress = () => {
+      if (!audioContextRef.current || !sourceRef.current) return;
+      const elapsed = audioContextRef.current.currentTime - startTimeRef.current + startCurrentTimeRef.current;
+      if (elapsed >= duration) {
+        setCurrentTime(0);
+        currentTimeRef.current = 0;
+        setIsPlaying(false);
+        sourceRef.current = null;
+        return;
+      }
+      setCurrentTime(elapsed);
+      currentTimeRef.current = elapsed;
+      animFrameRef.current = requestAnimationFrame(updateProgress);
+    };
+    animFrameRef.current = requestAnimationFrame(updateProgress);
+
     setIsPlaying(true);
-  }, [currentTime]);
+  }, [currentTime, duration, isPlaying, stopSource]);
 
   const handleCanvasClick = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -140,8 +227,55 @@ export default function WaveformAudioPlayer({ src }: WaveformAudioPlayerProps) {
       const x = e.clientX - rect.left;
       const clickTime = (x / rect.width) * duration;
       setCurrentTime(clickTime);
+      currentTimeRef.current = clickTime;
+
+      // If currently playing, stop and restart from new position
+      if (isPlaying) {
+        stopSource();
+        setIsPlaying(false);
+        // Immediately restart from the new position
+        setTimeout(() => {
+          if (!audioBufferRef.current || !audioContextRef.current) return;
+          if (audioContextRef.current.state === "suspended") {
+            audioContextRef.current.resume();
+          }
+          const startCurrentTime = clickTime;
+          const source = audioContextRef.current.createBufferSource();
+          source.buffer = audioBufferRef.current;
+          source.connect(audioContextRef.current.destination);
+          source.start(0, startCurrentTime);
+          sourceRef.current = source;
+
+          startTimeRef.current = audioContextRef.current.currentTime;
+          startCurrentTimeRef.current = startCurrentTime;
+
+          source.onended = () => {
+            setIsPlaying(false);
+            setCurrentTime(0);
+            currentTimeRef.current = 0;
+            sourceRef.current = null;
+          };
+
+          const updateProgress = () => {
+            if (!audioContextRef.current || !sourceRef.current) return;
+            const elapsed = audioContextRef.current.currentTime - startTimeRef.current + startCurrentTimeRef.current;
+            if (elapsed >= duration) {
+              setCurrentTime(0);
+              currentTimeRef.current = 0;
+              setIsPlaying(false);
+              sourceRef.current = null;
+              return;
+            }
+            setCurrentTime(elapsed);
+            currentTimeRef.current = elapsed;
+            animFrameRef.current = requestAnimationFrame(updateProgress);
+          };
+          animFrameRef.current = requestAnimationFrame(updateProgress);
+          setIsPlaying(true);
+        }, 0);
+      }
     },
-    [duration],
+    [duration, isPlaying, stopSource],
   );
 
   const formatTime = (seconds: number): string => {

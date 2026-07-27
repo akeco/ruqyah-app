@@ -67,8 +67,16 @@ export async function POST(request: NextRequest) {
     const image = formData.get("image") as File;
     const titleEn = (formData.get("titleEn") as string)?.trim();
     const titleBs = (formData.get("titleBs") as string)?.trim();
-    const descriptionEn = ((formData.get("descriptionEn") as string) || "").trim();
-    const descriptionBs = ((formData.get("descriptionBs") as string) || "").trim();
+    const contentEn = ((formData.get("contentEn") as string) || "").trim();
+    const contentBs = ((formData.get("contentBs") as string) || "").trim();
+    const excerptEn = ((formData.get("excerptEn") as string) || "").trim();
+    const excerptBs = ((formData.get("excerptBs") as string) || "").trim();
+    const authorEn = ((formData.get("authorEn") as string) || "").trim();
+    const authorBs = ((formData.get("authorBs") as string) || "").trim();
+    const categoryEn = ((formData.get("categoryEn") as string) || "").trim();
+    const categoryBs = ((formData.get("categoryBs") as string) || "").trim();
+    const slug = ((formData.get("slug") as string) || "").trim();
+    const publishedAt = formData.get("publishedAt") as string;
 
     if (!image || !titleEn || !titleBs) {
       return NextResponse.json(
@@ -119,10 +127,18 @@ export async function POST(request: NextRequest) {
 
     const lecture = await prisma.lecture.create({
       data: {
+        slug: slug || `lecture-${Date.now()}`,
         titleEn,
         titleBs,
-        descriptionEn: descriptionEn || null,
-        descriptionBs: descriptionBs || null,
+        contentEn: contentEn || null,
+        contentBs: contentBs || null,
+        excerptEn: excerptEn || null,
+        excerptBs: excerptBs || null,
+        authorEn: authorEn || null,
+        authorBs: authorBs || null,
+        categoryEn: categoryEn || null,
+        categoryBs: categoryBs || null,
+        publishedAt: publishedAt ? new Date(publishedAt) : new Date(),
         imageUrl,
       },
     });

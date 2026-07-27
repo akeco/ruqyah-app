@@ -27,17 +27,29 @@ model Audio {
   titleBs       String?
   descriptionEn String?
   descriptionBs String?
-  url           String
+  slug          String?  @unique
+  type          String?  // "lecture" | "ruqya"
+  duration      Int?     // duration in seconds
+  url           String?  // uploaded audio file URL
+  youtubeUrl    String?  // YouTube video link (alternative to an uploaded file)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
 
 model Lecture {
   id            String   @id @default(cuid())
+  slug          String?  @unique
   titleEn       String
   titleBs       String
-  descriptionEn String?
-  descriptionBs String?
+  contentEn     String?
+  contentBs     String?
+  excerptEn     String?
+  excerptBs     String?
+  authorEn      String?
+  authorBs      String?
+  categoryEn    String?  // "aqidah" | "family" | "general"
+  categoryBs    String?
+  publishedAt   DateTime?
   imageUrl      String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

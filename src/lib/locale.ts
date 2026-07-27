@@ -4,6 +4,13 @@
  */
 export type PathLocale = "en" | "bs";
 
+export const VALID_LANGUAGES: PathLocale[] = ["en", "bs"];
+
+export const langMap: Record<PathLocale, { code: string; name: string; dir: "ltr" | "rtl" }> = {
+  en: { code: "en", name: "English", dir: "ltr" },
+  bs: { code: "bs", name: "Bosanski", dir: "ltr" },
+};
+
 const BOS_COOKIE = "bos";
 
 /** Map cookie value to URL segment */

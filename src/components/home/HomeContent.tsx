@@ -22,9 +22,9 @@ export default function HomeContent({ locale }: { locale: PathLocale }) {
 
   return (
     <div className="bg-background font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col items-center gap-8 sm:items-start">
+      <main>
         <Image
-          src="/images/hero-book.webp"
+          src="/images/hero-image.webp"
           alt="Hero book"
           width={300}
           height={300}

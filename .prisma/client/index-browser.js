@@ -134,17 +134,29 @@ exports.Prisma.AudioScalarFieldEnum = {
   titleBs: 'titleBs',
   descriptionEn: 'descriptionEn',
   descriptionBs: 'descriptionBs',
+  slug: 'slug',
+  type: 'type',
+  duration: 'duration',
   url: 'url',
+  youtubeUrl: 'youtubeUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
 exports.Prisma.LectureScalarFieldEnum = {
   id: 'id',
+  slug: 'slug',
   titleEn: 'titleEn',
   titleBs: 'titleBs',
-  descriptionEn: 'descriptionEn',
-  descriptionBs: 'descriptionBs',
+  contentEn: 'contentEn',
+  contentBs: 'contentBs',
+  excerptEn: 'excerptEn',
+  excerptBs: 'excerptBs',
+  authorEn: 'authorEn',
+  authorBs: 'authorBs',
+  categoryEn: 'categoryEn',
+  categoryBs: 'categoryBs',
+  publishedAt: 'publishedAt',
   imageUrl: 'imageUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { createClient } from "@supabase/supabase-js";
 
 const AUDIO_BUCKET = "rukja-audio";
+const YOUTUBE_URL_REGEX = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|shorts\/|embed\/)|youtu\.be\/)[\w-]+/i;
 
 function getJwtRole(token: string): string | null {
   const parts = token.split(".");
@@ -69,6 +70,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const titleBs = (formData.get("titleBs") as string)?.trim();
     const descriptionEn = ((formData.get("descriptionEn") as string) || "").trim();
     const descriptionBs = ((formData.get("descriptionBs") as string) || "").trim();
+    const youtubeUrl = ((formData.get("youtubeUrl") as string) || "").trim() || null;
+    const typeInput = formData.get("type") as string | null;
+    const type = typeInput === "lecture" || typeInput === "ruqya" ? typeInput : existingAudio.type;
     const file = formData.get("file");
 
     if (!titleEn || !titleBs) {
@@ -78,8 +82,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       );
     }
 
+    if (youtubeUrl && !YOUTUBE_URL_REGEX.test(youtubeUrl)) {
+      return NextResponse.json({ error: "That doesn't look like a valid YouTube link" }, { status: 400 });
+    }
+
     let nextUrl = existingAudio.url;
     const isFileProvided = file instanceof File && file.size > 0;
+
+    if (!isFileProvided && !nextUrl && !youtubeUrl) {
+      return NextResponse.json(
+        { error: "Provide either an audio file or a YouTube video link" },
+        { status: 400 },
+      );
+    }
     if (isFileProvided) {
       const allowedTypes = [
         "audio/mpeg",
@@ -122,7 +137,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       nextUrl = supabaseResult.supabaseAdmin.storage.from(AUDIO_BUCKET).getPublicUrl(filePath)
         .data.publicUrl;
 
-      const oldPath = getStoragePathFromPublicUrl(existingAudio.url);
+      const oldPath = existingAudio.url ? getStoragePathFromPublicUrl(existingAudio.url) : null;
       if (oldPath) {
         await supabaseResult.supabaseAdmin.storage.from(AUDIO_BUCKET).remove([oldPath]);
       }
@@ -136,6 +151,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         descriptionEn: descriptionEn || null,
         descriptionBs: descriptionBs || null,
         url: nextUrl,
+        youtubeUrl,
+        type,
       },
     });
 
@@ -176,7 +193,7 @@ export async function DELETE(
       );
     }
 
-    const filePath = getStoragePathFromPublicUrl(audio.url);
+    const filePath = audio.url ? getStoragePathFromPublicUrl(audio.url) : null;
 
     // Delete from Supabase Storage if we have the path
     if (filePath) {
