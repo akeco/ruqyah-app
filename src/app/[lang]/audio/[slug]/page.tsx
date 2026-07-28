@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { CustomAudioPlayer } from "@/components/audio/CustomAudioPlayer";
+import { getApiBaseUrl } from "@/lib/apiBase";
 
 interface AudioDetailProps {
   params: Promise<{ lang: string; slug: string }>;
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/audio/${slug}?lang=${lang}`,
+      `${getApiBaseUrl()}/api/audio/${slug}?lang=${lang}`,
       { cache: "no-store" }
     );
     if (res.ok) {
@@ -53,7 +54,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       description,
       type: "website",
       locale: isBs ? "bs_BA" : "en_US",
-      url: `https://ruqyaliјecenje.com/${lang}/audio/${slug}`,
+      url: `https://mehlem-clinic.com/${lang}/audio/${slug}`,
     },
   };
 }
@@ -68,7 +69,7 @@ export default async function AudioDetailPage({ params }: AudioDetailProps) {
   const isBs = lang === "bs";
 
   // Fetch audio data
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const apiBase = getApiBaseUrl();
   let audio: any = null;
   let fetchError = false;
   try {
@@ -131,11 +132,11 @@ export default async function AudioDetailPage({ params }: AudioDetailProps) {
     encodingFormat: "audio/mpeg",
     actor: {
       "@type": "Person",
-      name: reciter || (isBs ? "Tim Ruqya" : "Ruqya Team"),
+      name: reciter || (isBs ? "Tim Mehlem Clinic" : "Mehlem Clinic Team"),
     },
     publisher: {
       "@type": "Organization",
-      name: isBs ? "Ruqya Liječenje Kur'anom" : "Ruqya Healing",
+      name: "Mehlem Clinic",
     },
     inLanguage: lang,
   };
@@ -148,19 +149,19 @@ export default async function AudioDetailPage({ params }: AudioDetailProps) {
         "@type": "ListItem",
         position: 1,
         name: isBs ? "Početna" : "Home",
-        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://ruqyaliјecenje.com"}/${lang}`,
+        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://mehlem-clinic.com"}/${lang}`,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: isBs ? "Audio biblioteka" : "Audio Library",
-        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://ruqyaliјecenje.com"}/${lang}/audio`,
+        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://mehlem-clinic.com"}/${lang}/audio`,
       },
       {
         "@type": "ListItem",
         position: 3,
         name: title,
-        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://ruqyaliјecenje.com"}/${lang}/audio/${slug}`,
+        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://mehlem-clinic.com"}/${lang}/audio/${slug}`,
       },
     ],
   };

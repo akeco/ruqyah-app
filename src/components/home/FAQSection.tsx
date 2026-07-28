@@ -15,6 +15,10 @@ const data = {
       a: "No. Ruqya is a complementary spiritual practice rooted in the Sunnah. It should be used alongside - never as a replacement for - professional medical or psychological care. Always consult a licensed healthcare provider for physical or mental health concerns.",
     },
     {
+      q: "Does Mehlem Clinic offer consultations for psychological and emotional problems?",
+      a: "Yes. Alongside Ruqya, Mehlem Clinic offers Islamic-rooted psychological and emotional wellness consultations for concerns such as anxiety, stress, grief, and waswas (intrusive thoughts). These sessions combine dhikr, dua, and Quranic guidance with practical emotional support grounded in Islamic tradition. For diagnosed mental health conditions or clinical treatment, we always encourage working alongside a licensed psychologist or psychiatrist.",
+    },
+    {
       q: "How does an online audio or video Ruqya consultation work?",
       a: "You book a private session at a convenient time, describe your concern to a practitioner in a confidential setting, and receive live Quranic recitation, personalized supplications, and practical guidance over an audio or video call, followed by a plan for daily practice.",
     },
@@ -47,6 +51,10 @@ const data = {
     {
       q: "Da li je Rukja zamjena za medicinsko ili psihološko liječenje?",
       a: "Ne. Rukja je komplementarna duhovna praksa utemeljena na Sunnetu. Treba se koristiti uz - nikako umjesto - profesionalnu medicinsku ili psihološku njegu. Za fizičke ili mentalne zdravstvene probleme uvijek se obratite licenciranom zdravstvenom radniku.",
+    },
+    {
+      q: "Da li Mehlem Clinic nudi konsultacije za psihološke i emocionalne probleme?",
+      a: "Da. Pored rukje, Mehlem Clinic nudi islamsko utemeljeno psihološko i emocionalno savjetovanje za anksioznost, stres, tugu i vesvesu (nametljive misli). Ove sesije kombinuju zikr, dovu i kur'ansko vodstvo sa praktičnom emocionalnom podrškom utemeljenom na islamskoj tradiciji. Za dijagnostikovana mentalna stanja ili kliničko liječenje uvijek preporučujemo saradnju sa licenciranim psihologom ili psihijatrom.",
     },
     {
       q: "Kako funkcioniše online audio ili video rukja konsultacija?",

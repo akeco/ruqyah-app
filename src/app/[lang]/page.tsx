@@ -24,14 +24,14 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
   return {
     title: isBs
-      ? "Ruqya Liječenje Kur'anom | Urok, Sihr, Anksioznost i Poslanička Medicina"
-      : "Ruqya Healing - Quran-Based Treatment for Evil Eye, Black Magic & Anxiety",
+      ? "Mehlem Clinic | Rukja, Poslanička Medicina i Psiholoska Podrska po Kur'anu i Sunnetu"
+      : "Mehlem Clinic - Ruqya, Prophetic Medicine & Islamic Psychological Support",
     description: isBs
-      ? "Online audio i video rukja konsultacije za urok, sihr, vesvesu i anksioznost. Predavanja, audio recitacije i poslanička medicina (crni kim, med, hidžama) po Kur'anu i Sunnetu."
-      : "Book online audio or video Ruqya consultations for the evil eye, black magic, waswas, and anxiety. Explore lectures, audio recitations, and prophetic remedies (black seed, honey, cupping) rooted in the Quran and Sunnah.",
+      ? "Mehlem Clinic je online islamska klinika za urok, sihr, vesvesu, anksioznost i emocionalnu tjeskobu. Nudimo audio/video rukja konsultacije, psiholosku podrsku utemeljenu na islamskim principima, poslaničku medicinu (crni kim, med, hidžama) i biljne lijekove po Kur'anu i Sunnetu, na bosanskom i engleskom jeziku."
+      : "Mehlem Clinic is an online Islamic clinic treating the evil eye, black magic, waswas, anxiety, and emotional distress. We offer audio/video Ruqya consultations, Islamic-rooted psychological and emotional wellness support, prophetic medicine (black seed, honey, hijama), and herbal remedies from the Quran and Sunnah, in English and Bosnian.",
     keywords: isBs
-      ? "ruqya, rukja, kur'an, liječenje, duhovno iscjeljenje, urok, sihr, crna magija, vesvesa, hidžama, crni kim, poslanička medicina, online rukja, video konsultacija, audio rukja, dhikr, zikr"
-      : "ruqya, ruqyah, quran healing, spiritual healing, evil eye treatment, black magic removal, sihr, waswas, jinn possession, prophetic medicine, black seed, hijama cupping, online ruqya consultation, video consultation, audio ruqya, dhikr, islamic healing",
+      ? "Mehlem Clinic, ruqya, rukja, kur'an, liječenje, duhovno iscjeljenje, urok, sihr, crna magija, vesvesa, hidžama, crni kim, poslanička medicina, psiholoska podrska, anksioznost, online rukja, video konsultacija, audio rukja, dhikr, zikr, biljni lijekovi"
+      : "Mehlem Clinic, ruqya, ruqyah, quran healing, spiritual healing, evil eye treatment, black magic removal, sihr, waswas, jinn possession, prophetic medicine, black seed, hijama cupping, islamic psychological consultation, anxiety support, online ruqya consultation, video consultation, audio ruqya, dhikr, islamic healing, herbal remedies",
     alternates: {
       canonical: `/${lang}`,
       languages: {
@@ -41,11 +41,11 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     },
     openGraph: {
       title: isBs
-        ? "Ruqya Liječenje Kur'anom | Urok, Sihr i Poslanička Medicina"
-        : "Ruqya Healing - Evil Eye, Black Magic & Prophetic Medicine",
+        ? "Mehlem Clinic | Rukja, Poslanička Medicina i Psiholoska Podrska"
+        : "Mehlem Clinic - Ruqya, Prophetic Medicine & Islamic Psychological Support",
       description: isBs
-        ? "Online audio i video rukja konsultacije, predavanja i poslanička medicina po Kur'anu i Sunnetu."
-        : "Online audio and video Ruqya consultations, lectures, and prophetic remedies rooted in the Quran and Sunnah.",
+        ? "Online rukja konsultacije, psiholoska podrska, poslanička medicina i biljni lijekovi po Kur'anu i Sunnetu."
+        : "Online Ruqya consultations, Islamic psychological support, prophetic medicine, and herbal remedies rooted in the Quran and Sunnah.",
       type: "website",
       locale: isBs ? "bs_BA" : "en_US",
     },

@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
 import { VALID_LANGUAGES } from "@/lib/locale";
+import { getApiBaseUrl } from "@/lib/apiBase";
 
 const STATIC_PATHS = ["", "/lectures", "/audio"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ruqyaliјecenje.com";
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mehlem-clinic.com";
+  const apiBase = getApiBaseUrl();
 
   const entries: MetadataRoute.Sitemap = [];
 

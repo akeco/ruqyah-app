@@ -3,6 +3,7 @@ import Link from "next/link";
 import { VALID_LANGUAGES } from "@/lib/locale";
 import { AudioList } from "@/components/audio/AudioList";
 import { ContactCtaBanner } from "@/components/ContactCtaBanner";
+import { getApiBaseUrl } from "@/lib/apiBase";
 
 interface AudioPageProps {
   params: Promise<{ lang: string }>;
@@ -16,14 +17,14 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
   return {
     title: isBs
-      ? "Audio Rukja Recitacije i Predavanja za Zaštitu od Uroka i Sihra"
-      : "Audio Ruqya Recitations for Evil Eye and Black Magic Protection",
+      ? "Audio Rukja Recitacije i Predavanja | Mehlem Clinic"
+      : "Audio Ruqya Recitations for Evil Eye and Black Magic Protection | Mehlem Clinic",
     description: isBs
-      ? "Slušajte autentične rukja recitacije za zaštitu od uroka, sihra i džina, te edukativna audio predavanja provjerenih alima. Idealno za svakodnevnu zaštitu doma i porodice."
-      : "Listen to authentic Ruqya recitations for protection from the evil eye, black magic, and jinn. Ideal for daily home and family protection.",
+      ? "Mehlem Clinic audio biblioteka: autentične rukja recitacije za zaštitu od uroka, sihra i džina, te edukativna predavanja o duhovnom i psiholoskom zdravlju. Idealno za svakodnevnu zaštitu doma i porodice."
+      : "Mehlem Clinic's audio library: authentic Ruqya recitations for protection from the evil eye, black magic, and jinn, plus educational lectures on spiritual and psychological well-being. Ideal for daily home and family protection.",
     keywords: isBs
-      ? "audio rukja, recitacija za zastitu, urok, sihr, zastita doma, kur'anska recitacija, audio predavanja, dhikr audio"
-      : "ruqya audio, protection recitation, evil eye, black magic, home protection, quran recitation, dhikr audio",
+      ? "Mehlem Clinic, audio rukja, recitacija za zastitu, urok, sihr, zastita doma, kur'anska recitacija, audio predavanja, dhikr audio, psiholoska podrska"
+      : "Mehlem Clinic, ruqya audio, protection recitation, evil eye, black magic, home protection, quran recitation, dhikr audio, islamic psychological support",
     alternates: {
       canonical: `/${lang}/audio`,
       languages: {
@@ -53,7 +54,7 @@ export default async function AudioPage({ params, searchParams }: AudioPageProps
   const { type } = await searchParams;
 
   // Fetch all audio items
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const apiBase = getApiBaseUrl();
   let audioItems: any[] = [];
   try {
     const res = await fetch(

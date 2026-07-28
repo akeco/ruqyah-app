@@ -4,6 +4,7 @@ import Link from "next/link";
 import { VALID_LANGUAGES } from "@/lib/locale";
 import { LectureCard } from "@/components/lectures/LectureCard";
 import { ContactCtaBanner } from "@/components/ContactCtaBanner";
+import { getApiBaseUrl } from "@/lib/apiBase";
 
 interface LecturesPageProps {
   params: Promise<{ lang: string }>;
@@ -44,14 +45,14 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
   return {
     title: isBs
-      ? "Predavanja o Rukji, Uroku, Sihru i Poslaničkoj Medicini"
-      : "Islamic Lectures on Ruqya, Evil Eye, Black Magic & Prophetic Medicine",
+      ? "Predavanja o Rukji, Uroku, Sihru i Poslaničkoj Medicini | Mehlem Clinic"
+      : "Islamic Lectures on Ruqya, Evil Eye, Black Magic & Prophetic Medicine | Mehlem Clinic",
     description: isBs
-    ? "Besplatna edukativna predavanja o rukji, uroku (al-ajn), sihru, vesvesi i poslaničkoj medicini. Naučite kako prepoznati duhovne smetnje i ispravno se zaštititi kroz Kur'an i Sunnet."
-    : "Free educational lectures on Ruqya, the evil eye (al-'ayn), black magic (sihr), waswas, and prophetic medicine. Learn how to recognize spiritual ailments and protect yourself the correct way through the Quran and Sunnah.",
+    ? "Besplatna edukativna predavanja Mehlem Clinic o rukji, uroku (al-ajn), sihru, vesvesi, psiholoskoj i emocionalnoj tjeskobi te poslaničkoj medicini. Naučite kako prepoznati duhovne smetnje i ispravno se zaštititi kroz Kur'an i Sunnet."
+    : "Free educational lectures from Mehlem Clinic on Ruqya, the evil eye (al-'ayn), black magic (sihr), waswas, psychological and emotional distress, and prophetic medicine. Learn how to recognize spiritual ailments and protect yourself the correct way through the Quran and Sunnah.",
     keywords: isBs
-      ? "predavanja o rukji, urok, sihr, vesvesa, aqida, poslanička medicina, islamsko obrazovanje, zaštita od džina, hasad"
-      : "ruqya lectures, evil eye lectures, black magic lectures, waswas, aqidah, prophetic medicine lectures, islamic education, jinn protection, envy hasad",
+      ? "Mehlem Clinic, predavanja o rukji, urok, sihr, vesvesa, aqida, poslanička medicina, psiholoska podrska, islamsko obrazovanje, zaštita od džina, hasad"
+      : "Mehlem Clinic, ruqya lectures, evil eye lectures, black magic lectures, waswas, aqidah, prophetic medicine lectures, islamic psychological support, islamic education, jinn protection, envy hasad",
     alternates: {
       canonical: `/${lang}/lectures`,
       languages: {
@@ -81,7 +82,7 @@ export default async function LecturesPage({ params, searchParams }: LecturesPag
   const { category, page: pageParam } = await searchParams;
 
   // Fetch lectures from API
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const apiBase = getApiBaseUrl();
   let lectures: any[] = [];
   try {
     const res = await fetch(

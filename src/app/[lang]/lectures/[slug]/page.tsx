@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { VALID_LANGUAGES } from "@/lib/locale";
 import { ContactCtaBanner } from "@/components/ContactCtaBanner";
+import { getApiBaseUrl } from "@/lib/apiBase";
 
 interface LectureDetailProps {
   params: Promise<{ lang: string; slug: string }>;
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/lectures/${slug}?lang=${lang}`,
+      `${getApiBaseUrl()}/api/lectures/${slug}?lang=${lang}`,
       { cache: "no-store" }
     );
     if (res.ok) {
@@ -55,7 +56,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       description,
       type: "article",
       locale: isBs ? "bs_BA" : "en_US",
-      url: `https://ruqyaliјecenje.com/${lang}/lectures/${slug}`,
+      url: `https://mehlem-clinic.com/${lang}/lectures/${slug}`,
     },
   };
 }
@@ -71,7 +72,7 @@ export default async function LectureDetailPage({ params }: LectureDetailProps) 
   const isBs = lang === "bs";
 
   // Fetch lecture data
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const apiBase = getApiBaseUrl();
   let lecture: any = null;
   let fetchError = false;
   try {
@@ -176,21 +177,21 @@ export default async function LectureDetailPage({ params }: LectureDetailProps) 
     description: excerpt || "",
     author: {
       "@type": "Person",
-      name: author || (isBs ? "Tim Ruqya" : "Ruqya Team"),
+      name: author || (isBs ? "Tim Mehlem Clinic" : "Mehlem Clinic Team"),
     },
     publisher: {
       "@type": "Organization",
-      name: isBs ? "Ruqya Liječenje Kur'anom" : "Ruqya Healing",
+      name: "Mehlem Clinic",
       logo: {
         "@type": "ImageObject",
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://ruqyaliјecenje.com"}/logo.png`,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://mehlem-clinic.com"}/logo.png`,
       },
     },
     datePublished: lecture.published_at || new Date().toISOString(),
     dateModified: lecture.updated_at || new Date().toISOString(),
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://ruqyaliјecenje.com/${lang}/lectures/${slug}`,
+      "@id": `https://mehlem-clinic.com/${lang}/lectures/${slug}`,
     },
     articleSection: category || (isBs ? "Ruqya" : "Ruqya"),
     inLanguage: lang,
@@ -204,19 +205,19 @@ export default async function LectureDetailPage({ params }: LectureDetailProps) 
         "@type": "ListItem",
         position: 1,
         name: isBs ? "Početna" : "Home",
-        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://ruqyaliјecenje.com"}/${lang}`,
+        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://mehlem-clinic.com"}/${lang}`,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: isBs ? "Predavanja" : "Lectures",
-        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://ruqyaliјecenje.com"}/${lang}/lectures`,
+        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://mehlem-clinic.com"}/${lang}/lectures`,
       },
       {
         "@type": "ListItem",
         position: 3,
         name: title,
-        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://ruqyaliјecenje.com"}/${lang}/lectures/${slug}`,
+        item: `${process.env.NEXT_PUBLIC_SITE_URL || "https://mehlem-clinic.com"}/${lang}/lectures/${slug}`,
       },
     ],
   };

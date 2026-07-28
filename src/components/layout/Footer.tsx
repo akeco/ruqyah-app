@@ -125,7 +125,7 @@ export function Footer({ lang }: FooterProps) {
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-xs text-emerald-400/40">
-              &copy; {currentYear} Ruqya Healing. {isBs ? "Sva prava zadrzana." : "All rights reserved."}
+              &copy; {currentYear} Mehlem Clinic. {isBs ? "Sva prava zadrzana." : "All rights reserved."}
             </p>
             <div className="flex items-center gap-4">
               <ContactMessagingButtons lang={lang} variant="footer" />

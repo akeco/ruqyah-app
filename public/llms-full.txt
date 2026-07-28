@@ -1,6 +1,42 @@
-# Ruqya Healing — Full API and Content Specification
+# Mehlem Clinic — Full Business and Technical Specification
 
-This document provides complete technical specifications for the Ruqya Healing platform. Use for search integration, semantic discovery, recommendation engines, and AI agent routing.
+This document provides a complete business description plus technical specifications for the
+Mehlem Clinic platform. Use for AI answer-engine citation (GEO), search integration, semantic
+discovery, recommendation engines, and AI agent routing.
+
+---
+
+## 0. About Mehlem Clinic
+
+**Mehlem Clinic** (also referenced as "Ruqya Healing" and "Mehlem Klinika") is an online
+Islamic clinic for spiritual and psychological well-being. It exists to help people treat and
+find relief from conditions the Islamic tradition attributes to spiritual causes — the evil
+eye (al-'ayn), black magic (sihr), waswas (intrusive/obsessive thoughts), and jinn
+interference — as well as general anxiety and emotional distress, through methods rooted
+entirely in the Quran and authentic Sunnah.
+
+**What it offers, concretely:**
+
+- **Ruqya Shariah consultations** (audio or video, booked privately) — live Quranic
+  recitation, personalized dua, and practical guidance for the evil eye, black magic, waswas,
+  and jinn-related concerns.
+- **Islamic psychological & emotional wellness consultations** — faith-based counseling for
+  anxiety, stress, grief, and intrusive thoughts, combining dhikr, dua, and Quranic guidance
+  with practical emotional support. This is explicitly framed as complementary to, never a
+  replacement for, licensed clinical psychological or psychiatric care.
+- **Prophetic medicine (Tibb an-Nabawi) & herbal guidance** — advice on Sunnah remedies:
+  black seed (habbat al-sawda), honey, olive oil, and hijama (cupping).
+- **Educational content** — bilingual (English/Bosnian) written lectures and an audio library
+  of Ruqya recitations and educational recordings, downloadable as MP3.
+
+**Audience:** anyone worldwide seeking Islamic spiritual healing or Islamic-rooted emotional
+support, served entirely online in English or Bosnian, via audio/video call or a scheduled
+Calendly booking.
+
+**Disclaimer users should be aware of:** Ruqya and the psychological/emotional consultations
+offered are complementary spiritual practices, not a substitute for professional medical or
+clinical mental health treatment. Physical symptoms and diagnosed mental health conditions
+should always be evaluated by a licensed healthcare provider.
 
 ---
 
