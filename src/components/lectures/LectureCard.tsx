@@ -5,13 +5,31 @@ interface LectureCardProps {
   lang: string;
 }
 
+const PREVIEW_LIMIT = 140;
+
+function getPreviewText(raw: string | null | undefined, limit = PREVIEW_LIMIT) {
+  if (!raw) return "";
+
+  const plain = raw
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^-\s+/gm, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (plain.length <= limit) return plain;
+  return `${plain.slice(0, limit).trimEnd()}...`;
+}
+
 export function LectureCard({ lecture, lang }: LectureCardProps) {
   const isBs = lang === "bs";
   const title = isBs ? lecture.title_bs : lecture.title_en;
   const excerpt = isBs ? lecture.excerpt_bs : lecture.excerpt_en;
+  const content = isBs ? lecture.content_bs : lecture.content_en;
+  const preview = getPreviewText(excerpt || content);
   const author = isBs ? lecture.author_bs : lecture.author_en;
   const category = isBs ? lecture.category_bs : lecture.category_en;
   const slug = lecture.slug;
+  const imageUrl = lecture.image_url || "/images/lecture-placeholder.webp";
   const date = lecture.created_at
     ? new Date(lecture.created_at).toLocaleDateString(isBs ? "bs-BA" : "en-US", {
         year: "numeric",
@@ -31,9 +49,19 @@ export function LectureCard({ lecture, lang }: LectureCardProps) {
   const colorClass = categoryColors[category?.toLowerCase()] || "bg-background-elevated text-foreground-muted";
 
   return (
-    <article className="group flex flex-col rounded-xl border border-border-subtle bg-card overflow-hidden hover:border-secondary/50 hover:shadow-md transition-all">
-      {/* Top accent line */}
-      <div className="h-1 bg-gradient-to-r from-primary to-secondary" />
+    <Link
+      href={`/${lang}/lectures/${slug}`}
+      className="group flex flex-col rounded-xl border border-border-subtle bg-card overflow-hidden hover:border-secondary/50 hover:shadow-md transition-all"
+    >
+      {/* Image */}
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-background-elevated">
+        <img
+          src={imageUrl}
+          alt={title}
+          loading="lazy"
+          className="block h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
 
       <div className="flex flex-col flex-1 p-6">
         {/* Category badge */}
@@ -46,14 +74,15 @@ export function LectureCard({ lecture, lang }: LectureCardProps) {
 
         {/* Title */}
         <h3 className="text-lg font-heading font-bold text-foreground group-hover:text-primary transition-colors leading-snug mb-3">
-          <Link href={`/${lang}/lectures/${slug}`}>
-            {title}
-          </Link>
+          {title}
         </h3>
 
-        {/* Excerpt */}
-        <p className="text-sm text-foreground-muted leading-relaxed mb-4 flex-1 line-clamp-3">
-          {excerpt}
+        {/* Preview text + Read more */}
+        <p className="text-sm text-foreground-muted leading-relaxed mb-4 flex-1">
+          {preview}{" "}
+          <span className="whitespace-nowrap font-semibold text-primary group-hover:text-primary/80 transition-colors">
+            {isBs ? "Čitaj više" : "Read more"}
+          </span>
         </p>
 
         {/* Author */}
@@ -68,6 +97,6 @@ export function LectureCard({ lecture, lang }: LectureCardProps) {
           </div>
         )}
       </div>
-    </article>
+    </Link>
   );
 }

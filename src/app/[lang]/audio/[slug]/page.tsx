@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/audio/${slug}?lang=${lang}`,
-      { next: { revalidate: 3600 } }
+      { cache: "no-store" }
     );
     if (res.ok) {
       const data = await res.json();
@@ -74,7 +74,7 @@ export default async function AudioDetailPage({ params }: AudioDetailProps) {
   try {
     const res = await fetch(
       `${apiBase}/api/audio/${slug}?lang=${lang}`,
-      { next: { revalidate: 3600 }, cache: "force-cache" }
+      { cache: "no-store" }
     );
 
     if (!res.ok) {

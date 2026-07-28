@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 
 interface NavbarProps {
   lang: string;
@@ -21,7 +23,6 @@ export function Navbar({ lang }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const currentLang = lang;
-  const otherLang = lang === "bs" ? "en" : "bs";
 
   // Strip lang prefix for active check
   const isHomePage = pathname === `/${lang}` || pathname === `/${lang}/`;
@@ -40,15 +41,23 @@ export function Navbar({ lang }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href={`/${lang}`} className="flex items-center gap-2.5 group" aria-label="Ruqya Healing Home">
-            <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-              <svg className="h-5 w-5 text-secondary" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-              </svg>
-            </div>
-            <span className="text-lg font-heading font-bold hidden sm:inline text-foreground">
-              {isBs ? "Ruqya" : "Ruqya"}
-            </span>
+          <Link href={`/${lang}`} className="flex items-center group" aria-label="Mehlem Clinic Home">
+            <Image
+              src="/images/mehlem-clinic-icon.webp"
+              alt=""
+              width={299}
+              height={315}
+              className="h-9 w-auto sm:hidden"
+              aria-hidden
+            />
+            <Image
+              src="/images/mehlem-clinic-logo-inline.webp"
+              alt="Mehlem Clinic"
+              width={1178}
+              height={244}
+              className="hidden h-10 w-auto sm:block"
+              priority
+            />
           </Link>
 
           {/* Desktop nav */}
@@ -70,17 +79,7 @@ export function Navbar({ lang }: NavbarProps) {
 
           {/* Right side: lang toggle + mobile hamburger */}
           <div className="flex items-center gap-3">
-            {/* Language toggle */}
-            <Link
-              href={`/${otherLang}${pathname.replace(`/${lang}`, "") || ""}`}
-              className="inline-flex items-center gap-1.5 rounded-full border border-border-subtle bg-card px-3 py-1.5 text-xs font-semibold text-foreground-muted hover:border-secondary/50 hover:text-primary transition-colors"
-              aria-label={`Switch to ${isBs ? "English" : "Bosnian"}`}
-            >
-              <span>{isBs ? "EN" : "BS"}</span>
-              <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M7 16V4m0 0L3 8m4-4l4 4m6-4v12m0 0l4-4m-4 4l-4-4" />
-              </svg>
-            </Link>
+            <LanguageSwitcher currentLang={currentLang} />
 
             {/* Mobile hamburger */}
             <button
@@ -123,16 +122,7 @@ export function Navbar({ lang }: NavbarProps) {
               </Link>
             ))}
             <div className="px-4 pt-2">
-              <Link
-                href={`/${otherLang}${pathname.replace(`/${lang}`, "") || ""}`}
-                onClick={() => setMobileOpen(false)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border-subtle bg-card px-3 py-1.5 text-xs font-semibold text-foreground-muted hover:border-secondary/50 hover:text-primary transition-colors"
-              >
-                <span>{isBs ? "EN" : "BS"}</span>
-                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M7 16V4m0 0L3 8m4-4l4 4m6-4v12m0 0l4-4m-4 4l-4-4" />
-                </svg>
-              </Link>
+              <LanguageSwitcher currentLang={currentLang} onNavigate={() => setMobileOpen(false)} />
             </div>
           </div>
         )}

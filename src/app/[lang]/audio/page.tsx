@@ -1,6 +1,8 @@
 import { Metadata } from "next";
+import Link from "next/link";
 import { VALID_LANGUAGES } from "@/lib/locale";
 import { AudioList } from "@/components/audio/AudioList";
+import { ContactCtaBanner } from "@/components/ContactCtaBanner";
 
 interface AudioPageProps {
   params: Promise<{ lang: string }>;
@@ -15,13 +17,13 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   return {
     title: isBs
       ? "Audio Rukja Recitacije i Predavanja za Zaštitu od Uroka i Sihra"
-      : "Audio Ruqya Recitations & Lectures for Evil Eye and Black Magic Protection",
+      : "Audio Ruqya Recitations for Evil Eye and Black Magic Protection",
     description: isBs
       ? "Slušajte autentične rukja recitacije za zaštitu od uroka, sihra i džina, te edukativna audio predavanja provjerenih alima. Idealno za svakodnevnu zaštitu doma i porodice."
-      : "Listen to authentic Ruqya recitations for protection from the evil eye, black magic, and jinn, plus educational audio lectures from reliable scholars. Ideal for daily home and family protection.",
+      : "Listen to authentic Ruqya recitations for protection from the evil eye, black magic, and jinn. Ideal for daily home and family protection.",
     keywords: isBs
       ? "audio rukja, recitacija za zastitu, urok, sihr, zastita doma, kur'anska recitacija, audio predavanja, dhikr audio"
-      : "ruqya audio, protection recitation, evil eye, black magic, home protection, quran recitation, audio lectures, dhikr audio",
+      : "ruqya audio, protection recitation, evil eye, black magic, home protection, quran recitation, dhikr audio",
     alternates: {
       canonical: `/${lang}/audio`,
       languages: {
@@ -30,10 +32,10 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       },
     },
     openGraph: {
-      title: isBs ? "Audio Rukja Recitacije i Predavanja" : "Audio Ruqya Recitations & Lectures",
+      title: isBs ? "Audio Rukja Recitacije i Predavanja" : "Audio Ruqya Recitations",
       description: isBs
         ? "Slusajte rukja recitacije i predavanja za zastitu i iscjeljenje."
-        : "Listen to Ruqya recitations and lectures for protection and healing.",
+        : "Listen to Ruqya recitations for protection and healing.",
       type: "website",
       locale: isBs ? "bs_BA" : "en_US",
     },
@@ -56,7 +58,7 @@ export default async function AudioPage({ params, searchParams }: AudioPageProps
   try {
     const res = await fetch(
       `${apiBase}/api/audio?lang=${lang}${type ? `&type=${type}` : ""}`,
-      { next: { revalidate: 300 }, cache: "force-cache" }
+      { cache: "no-store" }
     );
 
     if (res.ok) {
@@ -80,9 +82,10 @@ export default async function AudioPage({ params, searchParams }: AudioPageProps
       a.type === ""
   );
 
-  // Filter by type param
-  const filteredLectures = type === "recitations" ? [] : lectures;
-  const filteredRecitations = type === "lectures" ? [] : recitations;
+  // Filter by type param (lectures section is Bosnian-only)
+  const filteredLectures = isBs && type !== "recitations" ? lectures : [];
+  const filteredRecitations =
+    !isBs || type !== "lectures" ? recitations : [];
 
   return (
     <main className="min-h-screen bg-background">
@@ -102,11 +105,17 @@ export default async function AudioPage({ params, searchParams }: AudioPageProps
             <h1 className="text-3xl sm:text-5xl font-heading font-bold text-foreground-inverse mb-4">
               {isBs ? "Audio Liječenje" : "Audio Healing"}
             </h1>
-            <p className="text-foreground-inverse/80 text-lg leading-relaxed">
+            <p className="text-foreground-inverse/80 text-lg leading-relaxed mb-8">
               {isBs
                 ? "Slusajte Ruqya snimke, predavanja i kur'anske recitacije za duhovno i emocionalno iscjeljenje."
-                : "Listen to Ruqya recordings, lectures, and Quranic recitations for spiritual and emotional healing."}
+                : "Listen to Ruqya recordings and Quranic recitations for spiritual and emotional healing."}
             </p>
+            <Link
+              href={`/${lang}#contact`}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-secondary px-8 py-3.5 text-base font-semibold text-secondary-foreground shadow-md hover:bg-secondary/90 transition-colors active:scale-[0.98]"
+            >
+              {isBs ? "Zakažite konsultaciju" : "Book a Consultation"}
+            </Link>
           </div>
         </div>
       </section>
@@ -117,37 +126,11 @@ export default async function AudioPage({ params, searchParams }: AudioPageProps
         <p className="text-foreground-muted leading-relaxed max-w-3xl mb-16">
           {isBs
             ? "Naša audio biblioteka podijeljena je u dvije kategorije: edukativna predavanja koja objašnjavaju uzroke i liječenje duhovnih smetnji, i direktne rukja recitacije namijenjene svakodnevnom slušanju radi zaštite od uroka, sihra i džina. Mnogi korisnici puštaju recitacije kod kuće tokom dana kao oblik trajne duhovne zaštite za sebe i svoju porodicu."
-            : "Our audio library is organized into two categories: educational lectures that explain the causes and treatment of spiritual ailments, and direct Ruqya recitations meant for daily listening as protection from the evil eye, black magic, and jinn. Many people play these recitations at home throughout the day as a form of ongoing spiritual protection for themselves and their family."}
+            : "Our audio library features direct Ruqya recitations meant for daily listening as protection from the evil eye, black magic, and jinn. Many people play these recitations at home throughout the day as a form of ongoing spiritual protection for themselves and their family."}
         </p>
 
-        {/* Section: Educational Lectures */}
-        <section className="mb-16" aria-labelledby="lectures-heading">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="h-8 w-1 rounded-full bg-secondary" />
-            <div>
-              <h2
-                id="lectures-heading"
-                className="text-2xl sm:text-3xl font-heading font-bold text-foreground"
-              >
-                {isBs ? "Edukativna Predavanja" : "Educational Lectures"}
-              </h2>
-              <p className="text-sm text-foreground-muted mt-1">
-                {isBs
-                  ? `Ovo je ${filteredLectures.length} ${filteredLectures.length === 1 ? "predavanje" : "predavanja"} za učenje o Ruqyi.`
-                  : `This is ${filteredLectures.length} ${filteredLectures.length === 1 ? "lecture" : "lectures"} on the topic of Ruqya.`}
-              </p>
-            </div>
-          </div>
-
-          {filteredLectures.length === 0 ? (
-            <EmptyState isBs={isBs} type="lectures" />
-          ) : (
-            <AudioList items={filteredLectures} lang={lang} category="lectures" />
-          )}
-        </section>
-
         {/* Section: Direct Ruqya Recitations */}
-        <section aria-labelledby="recitations-heading">
+        <section className={isBs ? "mb-16" : ""} aria-labelledby="recitations-heading">
           <div className="flex items-center gap-3 mb-8">
             <div className="h-8 w-1 rounded-full bg-primary" />
             <div>
@@ -176,7 +159,35 @@ export default async function AudioPage({ params, searchParams }: AudioPageProps
             <AudioList items={filteredRecitations} lang={lang} category="recitations" />
           )}
         </section>
+
+        {/* Section: Educational Lectures (Bosnian only) */}
+        {isBs && (
+        <section aria-labelledby="lectures-heading">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-8 w-1 rounded-full bg-secondary" />
+            <div>
+              <h2
+                id="lectures-heading"
+                className="text-2xl sm:text-3xl font-heading font-bold text-foreground"
+              >
+                Edukativna Predavanja
+              </h2>
+              <p className="text-sm text-foreground-muted mt-1">
+                {`Ovo je ${filteredLectures.length} ${filteredLectures.length === 1 ? "predavanje" : "predavanja"} za učenje o Ruqyi.`}
+              </p>
+            </div>
+          </div>
+
+          {filteredLectures.length === 0 ? (
+            <EmptyState isBs={isBs} type="lectures" />
+          ) : (
+            <AudioList items={filteredLectures} lang={lang} category="lectures" />
+          )}
+        </section>
+        )}
       </div>
+
+      <ContactCtaBanner lang={lang} />
     </main>
   );
 }

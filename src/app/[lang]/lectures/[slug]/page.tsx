@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { VALID_LANGUAGES } from "@/lib/locale";
+import { ContactCtaBanner } from "@/components/ContactCtaBanner";
 
 interface LectureDetailProps {
   params: Promise<{ lang: string; slug: string }>;
@@ -19,8 +20,8 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/lectures/${slug}?lang=${lang}`,
-      { next: { revalidate: 3600 } }
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/lectures/${slug}?lang=${lang}`,
+      { cache: "no-store" }
     );
     if (res.ok) {
       const data = await res.json();
@@ -76,7 +77,7 @@ export default async function LectureDetailPage({ params }: LectureDetailProps) 
   try {
     const res = await fetch(
       `${apiBase}/api/lectures/${slug}?lang=${lang}`,
-      { next: { revalidate: 3600 }, cache: "force-cache" }
+      { cache: "no-store" }
     );
 
     if (!res.ok) {
@@ -158,11 +159,9 @@ export default async function LectureDetailPage({ params }: LectureDetailProps) 
           </li>
         );
       }
-      if (paragraph.trim() === "") {
-        return <div key={i} className="h-4" />;
-      }
+    
       return (
-        <p key={i} className="text-foreground leading-relaxed mb-4">
+        <p key={i} className="text-foreground leading-relaxed">
           {paragraph}
         </p>
       );
@@ -235,8 +234,15 @@ export default async function LectureDetailPage({ params }: LectureDetailProps) 
       />
 
       {/* Hero */}
-      <header className="bg-olive-900">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      <header className="relative overflow-hidden bg-olive-900">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${lecture.image_url || "/images/lecture-placeholder.webp"})` }}
+          aria-hidden
+        />
+        <div className="absolute inset-0 bg-olive-900/85" aria-hidden />
+
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
           {category && (
             <span className="inline-block rounded-full bg-secondary/20 border border-secondary/30 px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground-inverse uppercase mb-4">
               {category}
@@ -291,14 +297,8 @@ export default async function LectureDetailPage({ params }: LectureDetailProps) 
           {content ? renderContent(content) : <p className="text-foreground-muted">No content available.</p>}
         </div>
 
-        {/* Divider */}
-        <div className="my-12 flex items-center gap-4">
-          <div className="flex-1 h-px bg-border-subtle" />
-          <svg className="h-5 w-5 text-secondary" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-          </svg>
-          <div className="flex-1 h-px bg-border-subtle" />
-        </div>
+        {/* CTA */}
+        <ContactCtaBanner lang={lang} variant="card" className="my-12" />
 
         {/* Back to lectures */}
         <a
@@ -309,7 +309,7 @@ export default async function LectureDetailPage({ params }: LectureDetailProps) 
             <path d="M19 12H5" />
             <polyline points="12 19 5 12 12 5" />
           </svg>
-          {isBs ? "< Nazad na predavanja" : "< Back to Lectures"}
+          {isBs ? "Nazad na predavanja" : "Back to Lectures"}
         </a>
       </div>
     </article>

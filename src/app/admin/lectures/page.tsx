@@ -8,8 +8,8 @@ interface Lecture {
   id: string;
   titleEn: string;
   titleBs: string;
-  descriptionEn: string | null;
-  descriptionBs: string | null;
+  contentEn: string | null;
+  contentBs: string | null;
   imageUrl: string;
   createdAt: string;
 }
@@ -24,9 +24,10 @@ export default function AdminLecturesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [titleEn, setTitleEn] = useState("");
   const [titleBs, setTitleBs] = useState("");
-  const [descriptionEn, setDescriptionEn] = useState("");
-  const [descriptionBs, setDescriptionBs] = useState("");
+  const [contentEn, setContentEn] = useState("");
+  const [contentBs, setContentBs] = useState("");
   const [image, setImage] = useState<File | null>(null);
+  const [editingImageUrl, setEditingImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -63,19 +64,16 @@ export default function AdminLecturesPage() {
       setError(null);
       setSuccess(null);
 
-      if (!image) {
-        setError("Please select a lecture image");
-        return;
-      }
-
       setUploading(true);
       try {
         const formData = new FormData();
-        formData.append("image", image);
+        if (image) {
+          formData.append("image", image);
+        }
         formData.append("titleEn", titleEn);
         formData.append("titleBs", titleBs);
-        formData.append("descriptionEn", descriptionEn);
-        formData.append("descriptionBs", descriptionBs);
+        formData.append("contentEn", contentEn);
+        formData.append("contentBs", contentBs);
 
         const res = await fetch("/api/admin/lecture/upload", {
           method: "POST",
@@ -90,8 +88,8 @@ export default function AdminLecturesPage() {
         setSuccess("Lecture added successfully.");
         setTitleEn("");
         setTitleBs("");
-        setDescriptionEn("");
-        setDescriptionBs("");
+        setContentEn("");
+        setContentBs("");
         setImage(null);
         await fetchLectures();
       } catch (err) {
@@ -100,7 +98,7 @@ export default function AdminLecturesPage() {
         setUploading(false);
       }
     },
-    [image, titleEn, titleBs, descriptionEn, descriptionBs, fetchLectures],
+    [image, titleEn, titleBs, contentEn, contentBs, fetchLectures],
   );
 
   const handleDelete = useCallback(async (id: string) => {
@@ -131,9 +129,10 @@ export default function AdminLecturesPage() {
     setEditingId(lecture.id);
     setTitleEn(lecture.titleEn);
     setTitleBs(lecture.titleBs);
-    setDescriptionEn(lecture.descriptionEn || "");
-    setDescriptionBs(lecture.descriptionBs || "");
+    setContentEn(lecture.contentEn || "");
+    setContentBs(lecture.contentBs || "");
     setImage(null);
+    setEditingImageUrl(lecture.imageUrl || null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
@@ -141,9 +140,10 @@ export default function AdminLecturesPage() {
     setEditingId(null);
     setTitleEn("");
     setTitleBs("");
-    setDescriptionEn("");
-    setDescriptionBs("");
+    setContentEn("");
+    setContentBs("");
     setImage(null);
+    setEditingImageUrl(null);
   }, []);
 
   const handleUpdateLecture = useCallback(
@@ -162,8 +162,8 @@ export default function AdminLecturesPage() {
         }
         formData.append("titleEn", titleEn);
         formData.append("titleBs", titleBs);
-        formData.append("descriptionEn", descriptionEn);
-        formData.append("descriptionBs", descriptionBs);
+        formData.append("contentEn", contentEn);
+        formData.append("contentBs", contentBs);
 
         const res = await fetch(`/api/admin/lecture/${editingId}`, {
           method: "PUT",
@@ -179,9 +179,10 @@ export default function AdminLecturesPage() {
         setEditingId(null);
         setTitleEn("");
         setTitleBs("");
-        setDescriptionEn("");
-        setDescriptionBs("");
+        setContentEn("");
+        setContentBs("");
         setImage(null);
+        setEditingImageUrl(null);
         await fetchLectures();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to update lecture");
@@ -189,7 +190,7 @@ export default function AdminLecturesPage() {
         setUploading(false);
       }
     },
-    [editingId, image, titleEn, titleBs, descriptionEn, descriptionBs, fetchLectures],
+    [editingId, image, titleEn, titleBs, contentEn, contentBs, fetchLectures],
   );
 
   if (status === "loading") {
@@ -243,42 +244,46 @@ export default function AdminLecturesPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
-                  Description (English)
+                  Content (English)
                 </label>
                 <textarea
-                  value={descriptionEn}
-                  onChange={(e) => setDescriptionEn(e.target.value)}
-                  rows={4}
+                  value={contentEn}
+                  onChange={(e) => setContentEn(e.target.value)}
+                  rows={8}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  placeholder="Enter English description"
+                  placeholder="Full lecture text. Use ## for a heading, ### for a subheading, and - for a bullet point."
                 />
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
-                  Description (Bosnian)
+                  Content (Bosnian)
                 </label>
                 <textarea
-                  value={descriptionBs}
-                  onChange={(e) => setDescriptionBs(e.target.value)}
-                  rows={4}
+                  value={contentBs}
+                  onChange={(e) => setContentBs(e.target.value)}
+                  rows={8}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  placeholder="Unesite opis na bosanskom"
+                  placeholder="Puni tekst predavanja. Koristite ## za naslov, ### za podnaslov, i - za tačku liste."
                 />
               </div>
             </div>
 
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">
-                Lecture Image *
+                Lecture Image
               </label>
               <input
                 type="file"
                 accept="image/*"
-                required
                 onChange={(e) => setImage(e.target.files?.[0] || null)}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-indigo-600 file:hover:bg-indigo-100"
               />
-              {image && (
+              <p className="mt-1 text-xs text-gray-500">
+                {editingId
+                  ? "Leave empty to keep the current image."
+                  : "Optional — a default placeholder image is used if none is selected."}
+              </p>
+              {image ? (
                 <div className="mt-2">
                   <p className="text-xs text-gray-500">
                     Selected: {image.name} ({(image.size / 1024 / 1024).toFixed(2)} MB)
@@ -289,6 +294,18 @@ export default function AdminLecturesPage() {
                     className="mt-2 h-20 w-32 rounded-md object-cover"
                   />
                 </div>
+              ) : (
+                editingId &&
+                editingImageUrl && (
+                  <div className="mt-2">
+                    <p className="text-xs text-gray-500">Current image:</p>
+                    <img
+                      src={editingImageUrl}
+                      alt="Current"
+                      className="mt-2 h-20 w-32 rounded-md object-cover"
+                    />
+                  </div>
+                )
               )}
             </div>
 
@@ -345,9 +362,9 @@ export default function AdminLecturesPage() {
                     <h3 className="text-sm font-semibold text-gray-900">
                       {lecture.titleEn} / {lecture.titleBs}
                     </h3>
-                    {(lecture.descriptionEn || lecture.descriptionBs) && (
-                      <p className="mt-1 text-sm text-gray-600">
-                        {lecture.descriptionEn || "-"} | {lecture.descriptionBs || "-"}
+                    {(lecture.contentEn || lecture.contentBs) && (
+                      <p className="mt-1 line-clamp-2 text-sm text-gray-600">
+                        {(lecture.contentEn || "-").slice(0, 120)} | {(lecture.contentBs || "-").slice(0, 120)}
                       </p>
                     )}
                     <p className="mt-2 text-xs text-gray-400">

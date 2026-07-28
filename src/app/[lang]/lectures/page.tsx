@@ -1,11 +1,40 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import Link from "next/link";
 import { VALID_LANGUAGES } from "@/lib/locale";
 import { LectureCard } from "@/components/lectures/LectureCard";
+import { ContactCtaBanner } from "@/components/ContactCtaBanner";
 
 interface LecturesPageProps {
   params: Promise<{ lang: string }>;
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; page?: string }>;
+}
+
+const PAGE_SIZE = 20;
+
+function buildLecturesHref(lang: string, category?: string, page?: number) {
+  const params = new URLSearchParams();
+  if (category) params.set("category", category);
+  if (page && page > 1) params.set("page", String(page));
+  const qs = params.toString();
+  return `/${lang}/lectures${qs ? `?${qs}` : ""}`;
+}
+
+// Windowed page numbers with ellipses for large page counts
+function getPageNumbers(current: number, total: number): (number | "...")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+
+  const pages = new Set<number>([1, total, current, current - 1, current + 1]);
+  const sorted = Array.from(pages)
+    .filter((p) => p >= 1 && p <= total)
+    .sort((a, b) => a - b);
+
+  const result: (number | "...")[] = [];
+  sorted.forEach((p, i) => {
+    if (i > 0 && p - sorted[i - 1] > 1) result.push("...");
+    result.push(p);
+  });
+  return result;
 }
 
 // Dynamic metadata
@@ -49,7 +78,7 @@ export function generateStaticParams() {
 export default async function LecturesPage({ params, searchParams }: LecturesPageProps) {
   const { lang } = await params;
   const isBs = lang === "bs";
-  const { category } = await searchParams;
+  const { category, page: pageParam } = await searchParams;
 
   // Fetch lectures from API
   const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
@@ -57,10 +86,7 @@ export default async function LecturesPage({ params, searchParams }: LecturesPag
   try {
     const res = await fetch(
       `${apiBase}/api/lectures?lang=${lang}${category ? `&category=${category}` : ""}`,
-      {
-        next: { revalidate: 60 },
-        cache: "force-cache",
-      }
+      { cache: "no-store" }
     );
 
     if (res.ok) {
@@ -86,6 +112,11 @@ export default async function LecturesPage({ params, searchParams }: LecturesPag
         .filter(Boolean)
     )
   ) as string[];
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const requestedPage = parseInt(pageParam || "1", 10);
+  const currentPage = Math.min(Math.max(1, Number.isNaN(requestedPage) ? 1 : requestedPage), totalPages);
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const categoryLabels: Record<string, string> = isBs
     ? {
@@ -115,11 +146,17 @@ export default async function LecturesPage({ params, searchParams }: LecturesPag
             <h1 className="text-3xl sm:text-5xl font-heading font-bold text-foreground-inverse mb-4">
               {isBs ? "Predavanja" : "Lectures"}
             </h1>
-            <p className="text-foreground-inverse/80 text-lg leading-relaxed">
+            <p className="text-foreground-inverse/80 text-lg leading-relaxed mb-8">
               {isBs
                 ? "Pouke i znanje iz Kur'ana i Sunneta za duhovni rast i iscjeljenje."
                 : "Wisdom and knowledge from the Quran and Sunnah for spiritual growth and healing."}
             </p>
+            <Link
+              href={`/${lang}#contact`}
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-secondary px-8 py-3.5 text-base font-semibold text-secondary-foreground shadow-md hover:bg-secondary/90 transition-colors active:scale-[0.98]"
+            >
+              {isBs ? "Zakažite konsultaciju" : "Book a Consultation"}
+            </Link>
           </div>
         </div>
       </section>
@@ -181,13 +218,69 @@ export default async function LecturesPage({ params, searchParams }: LecturesPag
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((lecture: any) => (
-              <LectureCard key={lecture.id} lecture={lecture} lang={lang} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginated.map((lecture: any) => (
+                <LectureCard key={lecture.id} lecture={lecture} lang={lang} />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <nav
+                aria-label={isBs ? "Stranice" : "Pagination"}
+                className="mt-12 flex items-center justify-center gap-2"
+              >
+                <Link
+                  href={buildLecturesHref(lang, category, currentPage - 1)}
+                  aria-disabled={currentPage === 1}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+                    currentPage === 1
+                      ? "pointer-events-none bg-background-elevated text-foreground-muted/50"
+                      : "bg-card text-foreground-muted hover:bg-accent hover:text-primary border border-border-subtle"
+                  }`}
+                >
+                  {isBs ? "< Prethodna" : "< Previous"}
+                </Link>
+
+                {getPageNumbers(currentPage, totalPages).map((p, i) =>
+                  p === "..." ? (
+                    <span key={`ellipsis-${i}`} className="px-2 text-sm text-foreground-muted">
+                      …
+                    </span>
+                  ) : (
+                    <Link
+                      key={p}
+                      href={buildLecturesHref(lang, category, p)}
+                      className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+                        p === currentPage
+                          ? "bg-primary text-primary-foreground shadow-lg"
+                          : "bg-card text-foreground-muted hover:bg-accent hover:text-primary border border-border-subtle"
+                      }`}
+                    >
+                      {p}
+                    </Link>
+                  )
+                )}
+
+                <Link
+                  href={buildLecturesHref(lang, category, currentPage + 1)}
+                  aria-disabled={currentPage === totalPages}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${
+                    currentPage === totalPages
+                      ? "pointer-events-none bg-background-elevated text-foreground-muted/50"
+                      : "bg-card text-foreground-muted hover:bg-accent hover:text-primary border border-border-subtle"
+                  }`}
+                >
+                  {isBs ? "Sljedeća >" : "Next >"}
+                </Link>
+              </nav>
+            )}
+          </>
         )}
       </section>
+
+      <ContactCtaBanner lang={lang} />
     </main>
   );
 }

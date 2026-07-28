@@ -5,6 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const LECTURE_BUCKET = "images";
 const MAX_UPLOAD_ATTEMPTS = 3;
+const DEFAULT_LECTURE_IMAGE = "/images/lecture-placeholder.webp";
 
 function getJwtRole(token: string): string | null {
   const parts = token.split(".");
@@ -78,51 +79,57 @@ export async function POST(request: NextRequest) {
     const slug = ((formData.get("slug") as string) || "").trim();
     const publishedAt = formData.get("publishedAt") as string;
 
-    if (!image || !titleEn || !titleBs) {
+    if (!titleEn || !titleBs) {
       return NextResponse.json(
-        { error: "Image, English title, and Bosnian title are required" },
+        { error: "English title and Bosnian title are required" },
         { status: 400 },
       );
     }
 
-    if (!image.type.startsWith("image/")) {
+    if (image && image.size > 0 && !image.type.startsWith("image/")) {
       return NextResponse.json({ error: "Only image files are allowed" }, { status: 400 });
     }
 
-    const extension = image.name.split(".").pop()?.toLowerCase() || "jpg";
-    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extension}`;
-    const filePath = `lectures/${fileName}`;
+    let imageUrl = DEFAULT_LECTURE_IMAGE;
 
-    let uploadError: { message: string } | null = null;
-    for (let attempt = 1; attempt <= MAX_UPLOAD_ATTEMPTS; attempt += 1) {
-      const result = await supabaseAdmin.storage.from(LECTURE_BUCKET).upload(filePath, image, {
-        cacheControl: "3600",
-        upsert: false,
-      });
+    if (image && image.size > 0) {
+      const extension = image.name.split(".").pop()?.toLowerCase() || "jpg";
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extension}`;
+      const filePath = `lectures/${fileName}`;
 
-      uploadError = result.error;
+      let uploadError: { message: string } | null = null;
+      for (let attempt = 1; attempt <= MAX_UPLOAD_ATTEMPTS; attempt += 1) {
+        const result = await supabaseAdmin.storage.from(LECTURE_BUCKET).upload(filePath, image, {
+          cacheControl: "3600",
+          upsert: false,
+        });
 
-      if (!uploadError) break;
+        uploadError = result.error;
 
-      const isNetworkReset =
-        uploadError.message?.toLowerCase().includes("fetch failed") ||
-        uploadError.message?.toLowerCase().includes("econnreset");
-      if (!isNetworkReset || attempt === MAX_UPLOAD_ATTEMPTS) break;
-    }
+        if (!uploadError) break;
 
-    if (uploadError) {
-      console.error("Lecture image upload error:", uploadError);
-      return NextResponse.json(
-        { error: "Failed to upload image", details: uploadError.message },
-        { status: 500 },
-      );
-    }
+        const isNetworkReset =
+          uploadError.message?.toLowerCase().includes("fetch failed") ||
+          uploadError.message?.toLowerCase().includes("econnreset");
+        if (!isNetworkReset || attempt === MAX_UPLOAD_ATTEMPTS) break;
+      }
 
-    const imageUrl = supabaseAdmin.storage.from(LECTURE_BUCKET).getPublicUrl(filePath)
-      .data.publicUrl;
+      if (uploadError) {
+        console.error("Lecture image upload error:", uploadError);
+        return NextResponse.json(
+          { error: "Failed to upload image", details: uploadError.message },
+          { status: 500 },
+        );
+      }
 
-    if (!imageUrl) {
-      return NextResponse.json({ error: "Failed to get image URL" }, { status: 500 });
+      const uploadedUrl = supabaseAdmin.storage.from(LECTURE_BUCKET).getPublicUrl(filePath)
+        .data.publicUrl;
+
+      if (!uploadedUrl) {
+        return NextResponse.json({ error: "Failed to get image URL" }, { status: 500 });
+      }
+
+      imageUrl = uploadedUrl;
     }
 
     const lecture = await prisma.lecture.create({
