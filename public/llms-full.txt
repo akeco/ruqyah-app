@@ -1,0 +1,311 @@
+# Ruqya Healing — Full API and Content Specification
+
+This document provides complete technical specifications for the Ruqya Healing platform. Use for search integration, semantic discovery, recommendation engines, and AI agent routing.
+
+---
+
+## 1. Prisma Schema (Source of Truth)
+
+### Model: User
+```
+id        String   @id @default(uuid())
+email     String   @unique
+name      String?
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
+@@index([email])
+```
+Represents admin users authenticated via NextAuth. No public-facing user accounts.
+
+### Model: Lecture
+```
+id            String   @id @default(cuid())
+slug          String?  @unique
+titleEn       String
+titleBs       String
+contentEn     String?
+contentBs     String?
+excerptEn     String?
+excerptBs     String?
+authorEn      String?
+authorBs      String?
+categoryEn    String?  // "aqidah" | "family" | "general"
+categoryBs    String?
+publishedAt   DateTime?
+imageUrl      String
+createdAt     DateTime @default(now())
+updatedAt     DateTime @updatedAt
+```
+Written content. Each field has English and Bosnian variants. The `slug` is the URL key. `categoryEn` classifies the lecture.
+
+### Model: Audio
+```
+id            String   @id @default(cuid())
+titleEn       String?
+titleBs       String?
+descriptionEn String?
+descriptionBs String?
+slug          String?  @unique
+type          String?  // "lecture" | "ruqya"
+duration      Int?     // seconds
+url           String?  // Supabase public URL or local path
+youtubeUrl    String?  // Alternative YouTube embed URL
+createdAt     DateTime @default(now())
+updatedAt     DateTime @updatedAt
+```
+Audio content. Either `url` (uploaded file) or `youtubeUrl` (embed) is populated. `type` distinguishes lecture recordings from Ruqya sessions.
+
+---
+
+## 2. Public API Reference
+
+All public endpoints return JSON with snake_case keys regardless of Prisma camelCase field names.
+
+### GET /api/lectures
+List lectures with optional filtering.
+
+**Query Parameters:**
+- `lang` (string, default: "en") — Content language for bilingual fields
+- `category` (string, optional) — Filter by `categoryEn` value ("aqidah", "family", "general")
+
+**Response (200):**
+```json
+{
+  "lectures": [
+    {
+      "id": "clx0abc123",
+      "slug": "ruqya-shar'iyya",
+      "title_en": "Ruqya Shar'iyya",
+      "title_bs": "Rukja Schariyya",
+      "content_en": "<p>Full HTML content...</p>",
+      "content_bs": "<p>Puni HTML sadrzaj...</p>",
+      "excerpt_en": "Short description...",
+      "excerpt_bs": "Kratak opis...",
+      "author_en": "Sheikh Name",
+      "author_bs": "Sheikh Ime",
+      "category_en": "aqidah",
+      "category_bs": "aqidah",
+      "published_at": "2025-01-15T10:00:00.000Z",
+      "image_url": "https://.../lectures/cover.jpg",
+      "created_at": "2025-01-10T08:00:00.000Z",
+      "updated_at": "2025-01-15T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+**Response (404):**
+```json
+{ "error": "Lecture not found" }
+```
+
+### GET /api/lectures/[slug]
+Retrieve a single lecture by slug.
+
+**Query Parameters:**
+- `lang` (string, default: "en") — Content language
+
+### GET /api/audio
+List audio items with optional filtering.
+
+**Query Parameters:**
+- `lang` (string, default: "en") — Content language
+- `type` (string, optional) — Filter by "lecture" or "ruqya"
+
+**Response (200):**
+```json
+{
+  "audio": [
+    {
+      "id": "clx0def456",
+      "slug": "ruqya-treatment-01",
+      "title_en": "Ruqya Treatment Session 1",
+      "title_bs": "Rukja Sesija 1",
+      "description_en": "Description in English...",
+      "description_bs": "Opis na bosanskom...",
+      "type": "ruqya",
+      "duration": 1800,
+      "url": "https://.../rukja-audio/file.mp3",
+      "youtube_url": null,
+      "created_at": "2025-01-10T08:00:00.000Z",
+      "updated_at": "2025-01-15T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+### GET /api/download
+Stream audio as MP3. Transcodes non-MP3 sources via ffmpeg. Supports YouTube extraction.
+
+**Query Parameters:**
+- `type` (string, required) — "file" (local/Supabase) or "youtube"
+- `src` (string, required) — Source URL
+- `title` (string, required) — Output filename stem
+
+**Response:** Audio stream with `Content-Type: audio/mpeg` and `Content-Disposition: attachment; filename="..."`.
+
+**Error Responses:**
+- 400: "Missing src", "Invalid YouTube URL", "Source not allowed" (non-allowed hosts blocked)
+- 502: "Failed to load YouTube audio", "Failed to fetch YouTube audio", "Failed to fetch source audio"
+
+---
+
+## 3. Planned API Endpoints (Not Yet Implemented)
+
+### POST /api/search (Semantic Search)
+Search across lectures and audio content using natural language queries.
+
+**Request:**
+```json
+{
+  "query": "how to find inner peace and anxiety relief",
+  "lang": "en",
+  "type": "all",
+  "limit": 10
+}
+```
+
+**Parameters:**
+- `query` (string, required) — Natural language search query. LLM agents should map symptom-based queries to content categories:
+  - "anxiety", "stress", "worry" -> search contentEn/contentBs for keywords: anxiety, stress, fear, peace, calm, tranquility
+  - "evil eye", "negative energy" -> search for: evil eye, negative, protection, ruqya, hijama
+  - "healing", "recovery" -> search for: healing, cure, recovery, treatment, prophetic medicine
+  - "inner peace" -> search for: peace, calm, tranquility, heart, soul, spiritual
+- `lang` (string, optional) — "en" or "bs". Default "en".
+- `type` (string, optional) — "all", "lectures", or "audio". Default "all".
+- `limit` (int, optional) — Max results. Default 10, max 50.
+
+**Response:**
+```json
+{
+  "results": [
+    {
+      "type": "lecture",
+      "id": "clx0abc123",
+      "slug": "peace-of-heart",
+      "title": "Finding Peace in Turbulent Times",
+      "excerpt": "A guide to calming the heart through dhikr and Quran...",
+      "score": 0.87,
+      "matched_fields": ["excerpt_en", "content_en"],
+      "url": "/en/lectures/peace-of-heart"
+    },
+    {
+      "type": "audio",
+      "id": "clx0def456",
+      "slug": "ruqya-treatment-01",
+      "title": "Ruqya Treatment Session 1",
+      "description": "Healing session for anxiety and spiritual distress...",
+      "score": 0.72,
+      "matched_fields": ["description_en"],
+      "url": "/en/audio/ruqya-treatment-01"
+    }
+  ],
+  "total": 2,
+  "query": "how to find inner peace and anxiety relief"
+}
+```
+
+### POST /api/recommendations (Recommendation Engine)
+Generate content recommendations based on user query or browsing context.
+
+**Request:**
+```json
+{
+  "query": "I have been feeling overwhelmed by negative thoughts and want to protect my family",
+  "lang": "en",
+  "context": {
+    "viewed_slugs": ["ruqya-basics", "evil-eye-protection"],
+    "time_spent_seconds": 120
+  },
+  "limit": 5
+}
+```
+
+**Parameters:**
+- `query` (string, required) — Natural language description of user need or symptom
+- `lang` (string, optional) — "en" or "bs". Default "en".
+- `context` (object, optional) — Browsing context for personalized recommendations
+  - `viewed_slugs` (string[], optional) — Previously viewed content slugs (exclude from results)
+  - `time_spent_seconds` (int, optional) — Engagement duration for relevance scoring
+- `limit` (int, optional) — Max recommendations. Default 5, max 20.
+
+**Query-to-Category Mapping for LLM Agents:**
+| User Query Pattern | Mapped Category | Search Keywords |
+|--------------------|-----------------|-----------------|
+| "anxiety", "stress", "fear", "worry" | spiritual-wellness | anxiety, stress, fear, peace, calm, dhikr, heart |
+| "evil eye", "jealousy", "negative energy", "harm" | protection | evil eye, negative, protection, ruqya, hijama, Quran |
+| "healing", "sickness", "illness", "recovery" | prophetic-medicine | healing, cure, prophetic medicine, black seed, honey, olive oil |
+| "family protection", "children", "home" | family-wellness | family, children, home, protection, blessing, barakah |
+| "inner peace", "spiritual", "soul", "connection" | spiritual-growth | peace, soul, spiritual, connection, Quran, prayer, dhikr |
+| "cupping", "hijama", "detox", "health" | physical-wellness | hijama, cupping, detox, health, treatment, prophetic |
+
+**Response:**
+```json
+{
+  "recommendations": [
+    {
+      "type": "lecture",
+      "id": "clx0abc123",
+      "slug": "evil-eye-protection",
+      "title": "Protecting Against the Evil Eye",
+      "excerpt": "Quranic methods for spiritual protection of yourself and family...",
+      "relevance_score": 0.94,
+      "reason": "Matches 'protect my family' in query",
+      "url": "/en/lectures/evil-eye-protection"
+    },
+    {
+      "type": "audio",
+      "id": "clx0def456",
+      "slug": "ruqya-treatment-01",
+      "title": "Ruqya Treatment Session 1",
+      "description": "Healing session for negative thoughts and spiritual distress...",
+      "relevance_score": 0.88,
+      "reason": "Complements viewed 'ruqya-basics' content",
+      "url": "/en/audio/ruqya-treatment-01"
+    }
+  ],
+  "query": "I have been feeling overwhelmed by negative thoughts and want to protect my family",
+  "suggested_categories": ["protection", "spiritual-wellness"]
+}
+```
+
+---
+
+## 4. Search Query Interpretation Guide
+
+When processing natural language queries for this platform, apply the following logic:
+
+1. **Normalize input:** Lowercase, remove filler words (the, a, an, is, are, want, need, how to, can I).
+2. **Extract intent:** Determine if the query is about a symptom (anxiety, pain), a topic (ruqya, hijama), or a goal (peace, protection).
+3. **Map to content categories:** Use the query-to-category mapping table above.
+4. **Search bilingual content:** Search both `contentEn`/`excerptEn` and `contentBs`/`excerptBs` fields when `lang` is ambiguous or set to "all".
+5. **Weight results:** Prioritize matches in `excerpt` fields over `content` fields. Prioritize title matches over body matches.
+6. **Handle cross-lingual queries:** If the query contains Bosnian words (e.g., "bol", "strah", "ljubomora"), search Bosnian fields first. If the query is in English, search English fields first.
+7. **Return URLs:** Always include the locale-prefixed URL path for each result.
+
+---
+
+## 5. Content Taxonomy
+
+The platform organizes content into these categories:
+
+| Category | Description | Example Topics |
+|----------|-------------|----------------|
+| aqidah | Islamic theology and faith | Tawheed, Shirk, belief in Quran |
+| family | Family guidance and relationships | Marriage, children, household protection |
+| general | General Islamic knowledge | History, prophets, daily practice |
+| spiritual-wellness | Mental and emotional healing | Anxiety, peace, dhikr, heart purification |
+| protection | Evil eye and spiritual defense | Ruqya, hijama, Quranic protection |
+| prophetic-medicine | Traditional remedies | Black seed, honey, olive oil, Sunnah treatments |
+| physical-wellness | Physical health practices | Cupping, detox, exercise, nutrition |
+| spiritual-growth | Deepening faith | Quran connection, prayer, soul purification |
+
+---
+
+## 6. Static Content URLs
+
+- Sitemap: `https://<domain>/sitemap.xml`
+- Robots: `https://<domain>/robots.txt`
+- Admin: `https://<domain>/admin`
+- Audio bucket: Supabase Storage bucket "rukja-audio"
+- Image bucket: Supabase Storage bucket "images"

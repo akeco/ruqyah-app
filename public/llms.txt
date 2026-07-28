@@ -1,0 +1,77 @@
+# Ruqya Healing — Application Overview
+
+## Purpose
+Multilingual (en/bs) Next.js web application delivering Islamic spiritual healing content: Ruqya (Quran-based healing), prophetic medicine, audio lectures, and wellness consulting. Brand: "Ruqya Healing".
+
+## Tech Stack
+- Next.js 15 (App Router, Turbopack dev)
+- TypeScript 5.9
+- PostgreSQL via Prisma 7.8
+- Supabase Storage (audio bucket: rukja-audio; image bucket: images)
+- NextAuth v5 beta for admin authentication
+- Tailwind CSS 4 with custom palette (olive/gold/cream)
+
+## Routing Structure
+All public routes are locale-prefixed: /en/... and /bs/...
+Middleware auto-redirects unlocalized paths to detected locale (cookie > Accept-Language > geo > default "en").
+
+### Public Pages
+| Route | Type | Description |
+|-------|------|-------------|
+| /[lang] | SSG | Landing page — hero, what-is-Ruqya, services grid, daily adhkar, contact form |
+| /[lang]/lectures | SSG | Lecture listing with category filter (aqidah/family/general) |
+| /[lang]/lectures/[slug] | SSG | Individual lecture detail page |
+| /[lang]/audio | SSG | Audio listing — lectures and educational content |
+| /[lang]/audio/[slug] | SSG | Individual audio detail with custom player |
+
+### Admin Routes (auth-gated)
+| Route | Type | Description |
+|-------|------|-------------|
+| /admin | Server | Admin dashboard |
+| /admin/lectures | Server | Lecture CRUD management |
+| /admin/audio | Server | Audio upload/management |
+
+### API Routes
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | /api/lectures?lang=en&category=... | None | List all lectures, optional category filter |
+| GET | /api/lectures/[slug]?lang=en | None | Single lecture detail |
+| GET | /api/audio?lang=en&type=lecture|ruqya | None | List all audio items, optional type filter |
+| POST | /api/admin/lectures | NextAuth | Create lecture (JSON body) |
+| PUT | /api/admin/lecture/[id] | NextAuth | Update lecture (multipart form-data) |
+| DELETE | /api/admin/lecture/[id] | NextAuth | Delete lecture + associated image |
+| POST | /api/admin/lectures/upload | NextAuth | Create lecture with image upload (multipart) |
+| POST | /api/admin/audios | NextAuth | List audios (GET-only endpoint) |
+| POST | /api/admin/audio/upload | NextAuth | Upload audio file or YouTube link to Supabase |
+| PATCH | /api/admin/audio/[id] | NextAuth | Update audio (multipart form-data) |
+| DELETE | /api/admin/audio/[id] | NextAuth | Delete audio + associated file |
+| GET | /api/download?type=file|youtube&src=...&title=... | None | Stream/transcode audio to MP3 via ffmpeg |
+| GET/POST | /api/auth/[...nextauth] | NextAuth | Authentication handler |
+
+### Static Assets
+| Route | Description |
+|-------|-------------|
+| /sitemap.xml | Dynamic sitemap (static pages + dynamic lecture/audio entries) |
+| /robots.txt | Disallow /admin and /api; reference sitemap |
+| /images/* | Static images (hero, placeholders, etc.) |
+
+## Content Model
+The app manages two primary content types:
+
+1. **Lectures** — Written articles with bilingual titles, excerpts, full content, author, and category. Each has an associated cover image.
+2. **Audio** — Recorded content (lectures or Ruqya sessions) stored as either uploaded files in Supabase or YouTube embed URLs.
+
+Both support English (en) and Bosnian (bs) translations.
+
+## Design System
+- Background: cream #F6F1E9
+- Foreground text: deep olive #2D3627
+- Primary accent: muted gold #C19853
+- Typography: Marcellus (headings), Manrope (body), Amiri (Arabic text)
+- Tailwind config defines: olive (50-950), gold (50-900), cream (50-500) scales
+
+## External Crawling
+- robots.txt allows all user agents to crawl public paths, disallows /admin and /api
+- sitemap.xml includes all locale-prefixed pages and dynamic content URLs
+- OpenGraph metadata set per locale (en_US / bs_BA)
+- JSON-LD structured data (Organization + WebSite schemas) injected in layout
