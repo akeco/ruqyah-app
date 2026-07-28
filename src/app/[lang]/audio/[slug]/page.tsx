@@ -51,6 +51,18 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       type: "website",
       locale: isBs ? "bs_BA" : "en_US",
       url: `https://mehlem-clinic.com/${lang}/audio/${slug}`,
+      images: [
+        {
+          url: "/images/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "Mehlem Clinic",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: ["/images/og-image.png"],
     },
   };
 }

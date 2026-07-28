@@ -4,6 +4,7 @@ import { fontClassNames } from "@/lib/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://mehlem-clinic.com"),
   title: "Mehlem Clinic - Islamic Healing Through Quran, Sunnah & Prophetic Medicine",
   description:
     "Mehlem Clinic is an online Islamic healing practice offering Ruqya (Quranic healing), Sunnah-based prophetic remedies, herbal guidance, and psychological/emotional wellness consultations rooted in Islamic tradition. Book audio or video sessions in English or Bosnian.",
@@ -17,6 +18,21 @@ export const metadata: Metadata = {
       "Online Ruqya consultations, prophetic medicine guidance, and Islamic psychological wellness support rooted in the Quran and Sunnah.",
     type: "website",
     locale: "en_US",
+    images: [
+      {
+        url: "/images/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Mehlem Clinic",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Mehlem Clinic - Islamic Healing Through Quran, Sunnah & Prophetic Medicine",
+    description:
+      "Online Ruqya consultations, prophetic medicine guidance, and Islamic psychological wellness support rooted in the Quran and Sunnah.",
+    images: ["/images/og-image.png"],
   },
 };
 

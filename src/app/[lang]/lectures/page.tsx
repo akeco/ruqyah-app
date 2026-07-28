@@ -70,6 +70,18 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
         : "Explore our library of lectures on Ruqya, the evil eye, black magic, and prophetic medicine.",
       type: "website",
       locale: isBs ? "bs_BA" : "en_US",
+      images: [
+        {
+          url: "/images/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "Mehlem Clinic",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: ["/images/og-image.png"],
     },
   };
 }

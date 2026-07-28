@@ -48,6 +48,18 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
         : "Online Ruqya consultations, Islamic psychological support, prophetic medicine, and herbal remedies rooted in the Quran and Sunnah.",
       type: "website",
       locale: isBs ? "bs_BA" : "en_US",
+      images: [
+        {
+          url: "/images/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "Mehlem Clinic",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: ["/images/og-image.png"],
     },
   };
 }
