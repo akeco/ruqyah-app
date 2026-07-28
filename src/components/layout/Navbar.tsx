@@ -33,11 +33,7 @@ export function Navbar({ lang }: NavbarProps) {
 
   return (
     <nav
-      className={`sticky top-0 z-50 w-full transition-colors ${
-        isHomePage
-          ? "border-b border-foreground-inverse/10 bg-transparent backdrop-blur-sm"
-          : "border-b border-border-subtle bg-background/80 backdrop-blur-md"
-      }`}
+      className="sticky top-0 z-50 w-full border-b border-border-subtle bg-background/80 backdrop-blur-md transition-colors"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -50,11 +46,7 @@ export function Navbar({ lang }: NavbarProps) {
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
               </svg>
             </div>
-            <span
-              className={`text-lg font-heading font-bold hidden sm:inline ${
-                isHomePage ? "text-foreground-inverse" : "text-foreground"
-              }`}
-            >
+            <span className="text-lg font-heading font-bold hidden sm:inline text-foreground">
               {isBs ? "Ruqya" : "Ruqya"}
             </span>
           </Link>
@@ -67,12 +59,8 @@ export function Navbar({ lang }: NavbarProps) {
                 href={`/${lang}${link.href}`}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive(link.key)
-                    ? isHomePage
-                      ? "bg-foreground-inverse/15 text-foreground-inverse"
-                      : "text-primary bg-accent"
-                    : isHomePage
-                      ? "text-foreground-inverse/90 hover:bg-foreground-inverse/10 hover:text-foreground-inverse"
-                      : "text-foreground-muted hover:text-primary hover:bg-background-elevated"
+                    ? "text-primary bg-accent"
+                    : "text-foreground-muted hover:text-primary hover:bg-background-elevated"
                 }`}
               >
                 {isBs ? link.bs : link.en}
@@ -85,11 +73,7 @@ export function Navbar({ lang }: NavbarProps) {
             {/* Language toggle */}
             <Link
               href={`/${otherLang}${pathname.replace(`/${lang}`, "") || ""}`}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
-                isHomePage
-                  ? "border-foreground-inverse/30 bg-foreground-inverse/10 text-foreground-inverse hover:border-foreground-inverse/50 hover:bg-foreground-inverse/20"
-                  : "border-border-subtle bg-card text-foreground-muted hover:border-secondary/50 hover:text-primary"
-              }`}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border-subtle bg-card px-3 py-1.5 text-xs font-semibold text-foreground-muted hover:border-secondary/50 hover:text-primary transition-colors"
               aria-label={`Switch to ${isBs ? "English" : "Bosnian"}`}
             >
               <span>{isBs ? "EN" : "BS"}</span>
@@ -101,11 +85,7 @@ export function Navbar({ lang }: NavbarProps) {
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className={`md:hidden rounded-lg p-2 transition-colors ${
-                isHomePage
-                  ? "text-foreground-inverse hover:bg-foreground-inverse/10"
-                  : "text-foreground-muted hover:bg-background-elevated"
-              }`}
+              className="md:hidden rounded-lg p-2 text-foreground-muted hover:bg-background-elevated transition-colors"
               aria-label="Toggle menu"
               aria-expanded={mobileOpen}
             >
@@ -127,11 +107,7 @@ export function Navbar({ lang }: NavbarProps) {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div
-            className={`mt-2 space-y-1 border-t pb-4 pt-4 md:hidden ${
-              isHomePage ? "border-foreground-inverse/10" : "border-border-subtle"
-            }`}
-          >
+          <div className="mt-2 space-y-1 border-t border-border-subtle pb-4 pt-4 md:hidden">
             {navLinks.map((link) => (
               <Link
                 key={link.key}
@@ -139,12 +115,8 @@ export function Navbar({ lang }: NavbarProps) {
                 onClick={() => setMobileOpen(false)}
                 className={`block rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                   isActive(link.key)
-                    ? isHomePage
-                      ? "bg-foreground-inverse/15 text-foreground-inverse"
-                      : "text-primary bg-accent"
-                    : isHomePage
-                      ? "text-foreground-inverse/90 hover:bg-foreground-inverse/10 hover:text-foreground-inverse"
-                      : "text-foreground-muted hover:text-primary hover:bg-background-elevated"
+                    ? "text-primary bg-accent"
+                    : "text-foreground-muted hover:text-primary hover:bg-background-elevated"
                 }`}
               >
                 {isBs ? link.bs : link.en}

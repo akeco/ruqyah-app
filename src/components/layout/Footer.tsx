@@ -42,7 +42,7 @@ export function Footer({ lang }: FooterProps) {
   const links = footerLinks[isBs ? "bs" : "en"];
 
   return (
-    <footer className="bg-background-hero text-foreground-inverse" role="contentinfo">
+    <footer className="bg-olive-900 text-foreground-inverse" role="contentinfo">
       {/* Main footer */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 lg:gap-12">

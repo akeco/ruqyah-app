@@ -9,7 +9,7 @@ export default function NotFound() {
   const isBs = lang === "bs";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background-hero px-4">
+    <div className="min-h-screen flex items-center justify-center bg-olive-900 px-4">
       <div className="text-center max-w-md">
         {/* 404 icon */}
         <div className="mx-auto h-24 w-24 rounded-full bg-foreground-inverse/10 flex items-center justify-center mb-8">

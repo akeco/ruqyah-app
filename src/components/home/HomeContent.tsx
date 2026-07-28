@@ -24,7 +24,7 @@ export default function HomeContent({ locale }: { locale: PathLocale }) {
     <div className="bg-background font-[family-name:var(--font-geist-sans)]">
       <main>
         <Image
-          src="/images/hero-image.webp"
+          src="/images/hero-leaf-book.webp"
           alt="Hero book"
           width={300}
           height={300}

@@ -87,7 +87,7 @@ export default async function AudioPage({ params, searchParams }: AudioPageProps
   return (
     <main className="min-h-screen bg-background">
       {/* Header */}
-      <section className="bg-background-hero py-16 sm:py-24 relative overflow-hidden">
+      <section className="bg-olive-900 py-16 sm:py-24 relative overflow-hidden">
         {/* Decorative pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 left-0 w-96 h-96 bg-secondary rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />

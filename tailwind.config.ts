@@ -9,83 +9,84 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Emerald palette
-        emerald: {
-          50:  "#ecfdf5",
-          100: "#d1fae5",
-          200: "#a7f3d0",
-          300: "#6ee7b7",
-          400: "#34d399",
-          500: "#10b981",
-          600: "#059669",
-          700: "#047857",
-          800: "#065f46",
-          900: "#064e3b",
-          950: "#022c22",
+        // Duboka maslinasto-zelena paleta (izvučena iz listova masline i sjenki)
+        olive: {
+          50:  "#f3f5f1",
+          100: "#e3e7dd",
+          200: "#c7cfbd",
+          300: "#a3b197",
+          400: "#7d9070",
+          500: "#5d7150", // Glavna srednja zelena
+          600: "#48583e",
+          700: "#3a4632",
+          800: "#2d3627", // Tamna sjenka lista
+          900: "#1e241b",
+          950: "#0f120d",
         },
-        // Amber / Gold palette
-        amber: {
-          50:  "#fffbeb",
-          100: "#fef3c7",
-          200: "#fde68a",
-          300: "#fcd34d",
-          400: "#fbbf24",
-          500: "#f59e0b",
-          600: "#d97706",
-          700: "#b45309",
-          800: "#92400e",
-          900: "#78350f",
+        // Zlatno-smeđa paleta (izvučena iz korica knjige i tople svjetlosti sa prozora)
+        gold: {
+          50:  "#fdfbf7",
+          100: "#f9f4e6",
+          200: "#f0e4c6",
+          300: "#e3ce9f",
+          400: "#d3b476",
+          500: "#c19853", // Prigušeno zlato za CTA / detalje
+          600: "#aa8042",
+          700: "#8d6435",
+          800: "#734f2d",
+          900: "#5e3f25",
         },
-        // Sage palette
-        sage: {
-          50:  "#f4f6f0",
-          100: "#e8ebe2",
-          200: "#d5dbc8",
-          300: "#c5cdb5",
-          400: "#aeb89c",
-          500: "#97a383",
+        // Meka krem paleta (dominantna pozadina na slici)
+        cream: {
+          50:  "#faf8f5",
+          100: "#f6f1e9", // Glavna topla bijela sa slike
+          200: "#ece3d4",
+          300: "#ded0bc",
+          400: "#ccb79f",
+          500: "#ba9e83",
         },
         background: {
-          DEFAULT: "#F8F0E3",
-          hero: "#2F4A36",
-          elevated: "#FCF7EF",
+          DEFAULT: "#F6F1E9", // Svijetla krem pozadina (izvučena sa lijeve strane slike)
+          hero: "#F6F1E9",    // Hero sekcija koristi istu boju jer je slika svijetla
+          elevated: "#FAF8F5",
         },
         foreground: {
-          DEFAULT: "#233227",
-          muted: "#677467",
-          inverse: "#F7F4EC",
+          DEFAULT: "#2D3627", // Duboka tamno-zelena za maksimalnu čitljivost na krem pozadini
+          muted: "#7D9070",   // Blaža maslinasta za opise
+          inverse: "#FAF8F5", // Kontrastna krem za tamne elemente
         },
         primary: {
-          DEFAULT: "#35543C",
-          foreground: "#FFFFFF",
+          DEFAULT: "#48583e", // Maslinasto-zelena za glavne UI elemente
+          foreground: "#FAF8F5",
         },
         secondary: {
-          DEFAULT: "#C8A35A",
-          foreground: "#233227",
+          DEFAULT: "#C19853", // Prigušeno zlato za primarne CTA gumbe
+          foreground: "#2D3627",
         },
         accent: {
-          DEFAULT: "#E8D6AE",
-          foreground: "#2F4A36",
+          DEFAULT: "#E2CE9F", // Svijetlo zlato za badge-eve ili detalje
+          foreground: "#3A4632",
         },
         border: {
-          DEFAULT: "#DCC9A6",
-          subtle: "#EEE4D3",
-          strong: "#B69A69",
+          DEFAULT: "#ECE3D4", // Suptilne konture u boji papira knjige
+          subtle: "#F6F1E9",
+          strong: "#C19853",
         },
         card: {
-          DEFAULT: "#FCF8F0",
-          foreground: "#233227",
+          DEFAULT: "#FAF8F5",
+          foreground: "#2D3627",
         },
         input: {
-          DEFAULT: "#FFFDF8",
-          border: "#E6D6BA",
-          placeholder: "#A59A84",
+          DEFAULT: "#FAF8F5",
+          border: "#ECE3D4",
+          placeholder: "#A3B197",
         },
-        ring: "#C8A35A",
+        ring: "#C19853",
       },
       fontFamily: {
-        heading: ["var(--font-heading)", "Cinzel", "serif"],
-        body: ["var(--font-body)", "Plus Jakarta Sans", "system-ui", "sans-serif"],
+        // Preporučeni 'Marcellus' za naslove i 'Manrope' za čist tekst
+        heading: ["var(--font-heading)", "Marcellus", "serif"],
+        body: ["var(--font-body)", "Manrope", "system-ui", "sans-serif"],
         arabic: ["'Amiri', serif"],
       },
       backgroundImage: {

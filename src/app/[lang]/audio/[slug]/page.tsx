@@ -96,7 +96,7 @@ export default async function AudioDetailPage({ params }: AudioDetailProps) {
 
   if (!audio) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background-hero">
+      <div className="min-h-screen flex items-center justify-center bg-olive-900">
         <div className="text-center">
           <div className="mx-auto h-16 w-16 rounded-full bg-foreground-inverse/10 flex items-center justify-center mb-6">
             <svg className="h-8 w-8 text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -178,7 +178,7 @@ export default async function AudioDetailPage({ params }: AudioDetailProps) {
       />
 
       {/* Hero */}
-      <header className="bg-background-hero">
+      <header className="bg-olive-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-foreground-inverse leading-tight mb-6">
             {title}

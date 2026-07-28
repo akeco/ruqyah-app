@@ -9,9 +9,9 @@ export function HeroSection({ lang }: HeroSectionProps) {
   const isBs = lang === "bs";
 
   return (
-    <section className="relative -mt-16 w-full" aria-labelledby="hero-heading">
+    <section className="relative w-full" aria-labelledby="hero-heading">
       <Image
-        src="/images/hero-image.webp"
+        src="/images/hero-leaf-book.webp"
         alt=""
         width={1920}
         height={1080}
@@ -19,16 +19,21 @@ export function HeroSection({ lang }: HeroSectionProps) {
         className="block h-auto w-full"
         aria-hidden
       />
-      <div className="absolute inset-0 bg-background-hero/40" aria-hidden />
+
+      {/* Scrim behind the text only — fades out before the leaf/book so the image stays clear on the right */}
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-background from-0% via-background/85 via-35% to-transparent to-65%"
+        aria-hidden
+      />
 
       <div className="absolute inset-0 flex items-center">
-        <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-24 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+        <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
             {/* Left column — text */}
             <div>
               <h1
                 id="hero-heading"
-                className="mb-6 font-heading text-4xl font-semibold leading-tight text-foreground-inverse sm:text-5xl lg:text-6xl"
+                className="mb-6 font-heading text-4xl font-semibold leading-tight text-foreground sm:text-5xl lg:text-6xl"
               >
                 {isBs ? (
                   <>
@@ -45,7 +50,7 @@ export function HeroSection({ lang }: HeroSectionProps) {
                 )}
               </h1>
 
-              <p className="mb-8 max-w-xl text-base leading-relaxed text-foreground-inverse/90 sm:text-lg">
+              <p className="mb-8 max-w-xl text-base leading-relaxed text-foreground-muted sm:text-lg">
                 {isBs
                   ? "Pronađite mir, zaštitu i cjelovito blagostanje kroz ispravnu Rukju i prirodne lijekove iz Sunneta."
                   : "Discover peace, protection, and holistic well-being through authentic Ruqyah Shariah and natural remedies from the Sunnah."}

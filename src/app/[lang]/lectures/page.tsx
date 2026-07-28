@@ -106,7 +106,7 @@ export default async function LecturesPage({ params, searchParams }: LecturesPag
   return (
     <main className="min-h-screen bg-background">
       {/* Header */}
-      <section className="bg-background-hero py-16 sm:py-24">
+      <section className="bg-olive-900 py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <span className="inline-block rounded-full bg-secondary/20 border border-secondary/30 px-4 py-1.5 text-xs font-semibold tracking-wide text-foreground-inverse uppercase mb-4">
