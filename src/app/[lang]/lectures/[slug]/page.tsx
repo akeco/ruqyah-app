@@ -2,7 +2,12 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { VALID_LANGUAGES } from "@/lib/locale";
 import { ContactCtaBanner } from "@/components/ContactCtaBanner";
-import { getApiBaseUrl } from "@/lib/apiBase";
+import { getLectureBySlug, getAllLectureSlugs } from "@/lib/data/lectures";
+
+// SSG: pages are statically generated at build time, then incrementally
+// regenerated in the background at most once per hour so admin edits and
+// new lectures show up without needing a full redeploy.
+export const revalidate = 3600;
 
 interface LectureDetailProps {
   params: Promise<{ lang: string; slug: string }>;
@@ -20,19 +25,12 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     : "A lecture on Ruqya and Quran-based healing.";
 
   try {
-    const res = await fetch(
-      `${getApiBaseUrl()}/api/lectures/${slug}?lang=${lang}`,
-      { cache: "no-store" }
-    );
-    if (res.ok) {
-      const data = await res.json();
-      const lecture = data.lecture;
-      if (lecture) {
-        title = isBs ? `${lecture.title_bs} | Ruqya Predavanja` : `${lecture.title_en} | Ruqya Lectures`;
-        description = isBs
-          ? lecture.excerpt_bs || lecture.content_bs?.slice(0, 160) || "Predavanje o Ruqyi."
-          : lecture.excerpt_en || lecture.content_en?.slice(0, 160) || "A lecture on Ruqya.";
-      }
+    const lecture = await getLectureBySlug(slug);
+    if (lecture) {
+      title = isBs ? `${lecture.title_bs} | Ruqya Predavanja` : `${lecture.title_en} | Ruqya Lectures`;
+      description = isBs
+        ? lecture.excerpt_bs || lecture.content_bs?.slice(0, 160) || "Predavanje o Ruqyi."
+        : lecture.excerpt_en || lecture.content_en?.slice(0, 160) || "A lecture on Ruqya.";
     }
   } catch {
     // metadata fallback
@@ -61,9 +59,9 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   };
 }
 
-export function generateStaticParams() {
-  // Return empty array to make pages dynamic - content is fetched from API at request time
-  return [];
+export async function generateStaticParams() {
+  const slugs = await getAllLectureSlugs();
+  return VALID_LANGUAGES.flatMap((lang) => slugs.map((slug) => ({ lang, slug })));
 }
 
 // Server component
@@ -71,26 +69,13 @@ export default async function LectureDetailPage({ params }: LectureDetailProps) 
   const { lang, slug } = await params;
   const isBs = lang === "bs";
 
-  // Fetch lecture data
-  const apiBase = getApiBaseUrl();
+  // Fetch lecture data directly from the database (no self-fetch over HTTP)
   let lecture: any = null;
   let fetchError = false;
   try {
-    const res = await fetch(
-      `${apiBase}/api/lectures/${slug}?lang=${lang}`,
-      { cache: "no-store" }
-    );
-
-    if (!res.ok) {
-      if (res.status === 404) {
-        notFound();
-      }
-      throw new Error("Failed to fetch lecture");
-    }
-
-    const data = await res.json();
-    lecture = data.lecture;
-  } catch {
+    lecture = await getLectureBySlug(slug);
+  } catch (error) {
+    console.error("Failed to load lecture:", error);
     fetchError = true;
   }
 

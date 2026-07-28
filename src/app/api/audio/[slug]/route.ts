@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getLectureBySlug } from "@/lib/data/lectures";
+import { getAudioBySlug } from "@/lib/data/audio";
 
 export async function GET(
   request: Request,
@@ -8,15 +8,15 @@ export async function GET(
   const { slug } = await params;
 
   try {
-    const lecture = await getLectureBySlug(slug);
+    const audio = await getAudioBySlug(slug);
 
-    if (!lecture) {
-      return NextResponse.json({ error: "Lecture not found" }, { status: 404 });
+    if (!audio) {
+      return NextResponse.json({ error: "Audio not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ lecture });
+    return NextResponse.json({ audio });
   } catch (error) {
-    console.error("Lecture detail error:", error);
+    console.error("Audio detail error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

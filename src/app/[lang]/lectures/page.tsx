@@ -4,7 +4,10 @@ import Link from "next/link";
 import { VALID_LANGUAGES } from "@/lib/locale";
 import { LectureCard } from "@/components/lectures/LectureCard";
 import { ContactCtaBanner } from "@/components/ContactCtaBanner";
-import { getApiBaseUrl } from "@/lib/apiBase";
+import { getLectures } from "@/lib/data/lectures";
+
+// Always render per-request so newly published lectures show up immediately
+export const dynamic = "force-dynamic";
 
 interface LecturesPageProps {
   params: Promise<{ lang: string }>;
@@ -81,21 +84,12 @@ export default async function LecturesPage({ params, searchParams }: LecturesPag
   const isBs = lang === "bs";
   const { category, page: pageParam } = await searchParams;
 
-  // Fetch lectures from API
-  const apiBase = getApiBaseUrl();
+  // Fetch lectures directly from the database (no self-fetch over HTTP)
   let lectures: any[] = [];
   try {
-    const res = await fetch(
-      `${apiBase}/api/lectures?lang=${lang}${category ? `&category=${category}` : ""}`,
-      { cache: "no-store" }
-    );
-
-    if (res.ok) {
-      const data = await res.json();
-      lectures = data.lectures || [];
-    }
-  } catch {
-    // API unavailable — show empty state
+    lectures = await getLectures({ category });
+  } catch (error) {
+    console.error("Failed to load lectures:", error);
   }
 
   // Filter by category if provided

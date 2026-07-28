@@ -3,7 +3,10 @@ import Link from "next/link";
 import { VALID_LANGUAGES } from "@/lib/locale";
 import { AudioList } from "@/components/audio/AudioList";
 import { ContactCtaBanner } from "@/components/ContactCtaBanner";
-import { getApiBaseUrl } from "@/lib/apiBase";
+import { getAudioItems } from "@/lib/data/audio";
+
+// Always render per-request so newly published audio shows up immediately
+export const dynamic = "force-dynamic";
 
 interface AudioPageProps {
   params: Promise<{ lang: string }>;
@@ -53,21 +56,12 @@ export default async function AudioPage({ params, searchParams }: AudioPageProps
   const isBs = lang === "bs";
   const { type } = await searchParams;
 
-  // Fetch all audio items
-  const apiBase = getApiBaseUrl();
+  // Fetch all audio items directly from the database (no self-fetch over HTTP)
   let audioItems: any[] = [];
   try {
-    const res = await fetch(
-      `${apiBase}/api/audio?lang=${lang}${type ? `&type=${type}` : ""}`,
-      { cache: "no-store" }
-    );
-
-    if (res.ok) {
-      const data = await res.json();
-      audioItems = data.audio || [];
-    }
-  } catch {
-    // API unavailable — show empty state
+    audioItems = await getAudioItems({ type });
+  } catch (error) {
+    console.error("Failed to load audio items:", error);
   }
 
   // Categorize — treat null/missing type as "ruqya" (default for this platform)

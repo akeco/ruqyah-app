@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { CustomAudioPlayer } from "@/components/audio/CustomAudioPlayer";
-import { getApiBaseUrl } from "@/lib/apiBase";
+import { getAudioBySlug } from "@/lib/data/audio";
+
+// Always render per-request so edits made in the admin panel show up immediately
+export const dynamic = "force-dynamic";
 
 interface AudioDetailProps {
   params: Promise<{ lang: string; slug: string }>;
@@ -18,19 +21,12 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     : "A Ruqya audio recording for healing.";
 
   try {
-    const res = await fetch(
-      `${getApiBaseUrl()}/api/audio/${slug}?lang=${lang}`,
-      { cache: "no-store" }
-    );
-    if (res.ok) {
-      const data = await res.json();
-      const audio = data.audio;
-      if (audio) {
-        title = isBs ? `${audio.title_bs} | Audio Biblioteka` : `${audio.title_en} | Audio Library`;
-        description = isBs
-          ? audio.description_bs || audio.title_bs || "Ruqya audio zapis."
-          : audio.description_en || audio.title_en || "A Ruqya audio recording.";
-      }
+    const audio = await getAudioBySlug(slug);
+    if (audio) {
+      title = isBs ? `${audio.title_bs} | Audio Biblioteka` : `${audio.title_en} | Audio Library`;
+      description = isBs
+        ? audio.description_bs || audio.title_bs || "Ruqya audio zapis."
+        : audio.description_en || audio.title_en || "A Ruqya audio recording.";
     }
   } catch {
     // metadata fallback
@@ -68,26 +64,13 @@ export default async function AudioDetailPage({ params }: AudioDetailProps) {
   const { lang, slug } = await params;
   const isBs = lang === "bs";
 
-  // Fetch audio data
-  const apiBase = getApiBaseUrl();
+  // Fetch audio data directly from the database (no self-fetch over HTTP)
   let audio: any = null;
   let fetchError = false;
   try {
-    const res = await fetch(
-      `${apiBase}/api/audio/${slug}?lang=${lang}`,
-      { cache: "no-store" }
-    );
-
-    if (!res.ok) {
-      if (res.status === 404) {
-        notFound();
-      }
-      throw new Error("Failed to fetch audio");
-    }
-
-    const data = await res.json();
-    audio = data.audio;
-  } catch {
+    audio = await getAudioBySlug(slug);
+  } catch (error) {
+    console.error("Failed to load audio:", error);
     fetchError = true;
   }
 

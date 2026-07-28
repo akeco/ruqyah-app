@@ -1,12 +1,15 @@
 import type { MetadataRoute } from "next";
 import { VALID_LANGUAGES } from "@/lib/locale";
-import { getApiBaseUrl } from "@/lib/apiBase";
+import { getLectures } from "@/lib/data/lectures";
+import { getAudioItems } from "@/lib/data/audio";
 
 const STATIC_PATHS = ["", "/lectures", "/audio"];
 
+// Refresh at most once an hour so newly published content appears in the sitemap
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mehlem-clinic.com";
-  const apiBase = getApiBaseUrl();
 
   const entries: MetadataRoute.Sitemap = [];
 
@@ -20,47 +23,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // Best-effort: include individual lectures and audio items if the API is reachable
+  // Best-effort: include individual lectures and audio items
   try {
-    const res = await fetch(`${apiBase}/api/lectures`, { next: { revalidate: 3600 } });
-    if (res.ok) {
-      const data = await res.json();
-      const lectures = (data.lectures || []) as { slug?: string }[];
-      for (const lang of VALID_LANGUAGES) {
-        for (const lecture of lectures) {
-          if (lecture.slug) {
-            entries.push({
-              url: `${siteUrl}/${lang}/lectures/${lecture.slug}`,
-              changeFrequency: "monthly",
-              priority: 0.6,
-            });
-          }
+    const lectures = await getLectures();
+    for (const lang of VALID_LANGUAGES) {
+      for (const lecture of lectures) {
+        if (lecture.slug) {
+          entries.push({
+            url: `${siteUrl}/${lang}/lectures/${lecture.slug}`,
+            changeFrequency: "monthly",
+            priority: 0.6,
+          });
         }
       }
     }
   } catch {
-    // API unavailable at build time — static routes above still cover the site
+    // DB unavailable at build time — static routes above still cover the site
   }
 
   try {
-    const res = await fetch(`${apiBase}/api/audio`, { next: { revalidate: 3600 } });
-    if (res.ok) {
-      const data = await res.json();
-      const audioItems = (data.audio || []) as { slug?: string }[];
-      for (const lang of VALID_LANGUAGES) {
-        for (const item of audioItems) {
-          if (item.slug) {
-            entries.push({
-              url: `${siteUrl}/${lang}/audio/${item.slug}`,
-              changeFrequency: "monthly",
-              priority: 0.6,
-            });
-          }
+    const audioItems = await getAudioItems();
+    for (const lang of VALID_LANGUAGES) {
+      for (const item of audioItems) {
+        if (item.slug) {
+          entries.push({
+            url: `${siteUrl}/${lang}/audio/${item.slug}`,
+            changeFrequency: "monthly",
+            priority: 0.6,
+          });
         }
       }
     }
   } catch {
-    // API unavailable at build time — static routes above still cover the site
+    // DB unavailable at build time — static routes above still cover the site
   }
 
   return entries;
