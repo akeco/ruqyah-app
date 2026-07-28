@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ContactMessagingButtons } from "@/components/home/ContactMessagingButtons";
+import { LegalLinks } from "@/components/layout/LegalLinks";
 
 interface FooterProps {
   lang: string;
@@ -19,11 +20,6 @@ export function Footer({ lang }: FooterProps) {
         { label: "Audio Library", href: "/en/audio" },
         { label: "Contact", href: "/en#contact" },
       ],
-      legal: [
-        { label: "Privacy Policy", href: "/en/privacy" },
-        { label: "Terms of Service", href: "/en/terms" },
-        { label: "Disclaimer", href: "/en/disclaimer" },
-      ],
     },
     bs: {
       product: [
@@ -31,11 +27,6 @@ export function Footer({ lang }: FooterProps) {
         { label: "Predavanja", href: "/bs/lectures" },
         { label: "Audio biblioteka", href: "/bs/audio" },
         { label: "Kontakt", href: "/bs#contact" },
-      ],
-      legal: [
-        { label: "Politika privatnosti", href: "/bs/privacy" },
-        { label: "Uslovi koristenja", href: "/bs/terms" },
-        { label: "Odricanje od odgovornosti", href: "/bs/disclaimer" },
       ],
     },
   };
@@ -97,18 +88,7 @@ export function Footer({ lang }: FooterProps) {
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               {isBs ? "Pravno" : "Legal"}
             </h3>
-            <ul className="space-y-3">
-              {links.legal.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={`/${lang}${link.href}`}
-                    className="text-sm text-emerald-300/60 hover:text-emerald-200 transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <LegalLinks lang={lang} />
           </div>
         </div>
       </div>
@@ -119,8 +99,8 @@ export function Footer({ lang }: FooterProps) {
           <div className="bg-amber-950/30 border border-amber-900/30 rounded-lg px-4 py-3 mb-4">
             <p className="text-xs text-amber-200/60 leading-relaxed">
               {isBs
-                ? "ODRICANJE OD ODGOVORNOSTA: Sadrzaj na ovom sajtu je namijenjen iskljucivo u edukativne i informativne svrhe. Nije namijenjen kao zamjena za profesionalnu medicinsku ili psiholosku pomoc. Za bilo koje zdravstvene probleme obratite se licenciranom zdravstvenom radniku. Spiritualno iscjeljenje treba koristiti kao dopunu, a ne zamjenu za konvencionalno lijecnje."
-                : "DISCLAIMER: Content on this site is for educational and informational purposes only. It is not intended as a substitute for professional medical or psychological advice. For any health concerns, consult a licensed healthcare provider. Spiritual healing should be used as a complement to, not a replacement for, conventional medical treatment."}
+                ? "ODRICANJE OD ODGOVORNOSTI: Mehlem Klinika je profesionalna praksa islamskog duhovnog liječenja. Iza naših usluga stoje školovani praktičari sa teorijskim znanjem i praktičnim iskustvom u rukji i duhovnoj njezi utemeljenoj na Kur'anu i Sunnetu. Kod dijagnosticiranih medicinskih ili psihijatrijskih stanja, naša podrška se pruža uz - a ne umjesto - liječenje licenciranih ljekara i stručnjaka za mentalno zdravlje."
+                : "DISCLAIMER: Mehlem Clinic is a professional Islamic healing practice. Our services are delivered by trained practitioners with both theoretical knowledge and hands-on experience in Ruqya and Quran- and Sunnah-based spiritual care. For diagnosed medical or psychiatric conditions, our support is offered alongside - not instead of - treatment from licensed physicians and mental health professionals."}
             </p>
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
